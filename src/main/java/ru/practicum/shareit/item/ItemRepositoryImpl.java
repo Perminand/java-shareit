@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class ItemRepositoryImpl implements ItemRepository{
+public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Long, Item> itemMap = new HashMap<>();
     private final Map<Long, ItemRequest> itemRequestMap = new HashMap<>();
     private long generateId = 0L;
@@ -20,7 +20,7 @@ public class ItemRepositoryImpl implements ItemRepository{
 
     @Override
     public List<Item> getItems(long userId) {
-         List<Item> itemList = itemMap.values()
+        List<Item> itemList = itemMap.values()
                 .stream()
                 .filter(item -> item.getOwner().getId() == userId)
                 .toList();
@@ -41,7 +41,7 @@ public class ItemRepositoryImpl implements ItemRepository{
 
     @Override
     public List<Item> search(String text) {
-         List<Item> itemList = itemMap.values()
+        List<Item> itemList = itemMap.values()
                 .stream()
                 .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase()) ||
                         item.getDescription().toLowerCase().contains(text.toLowerCase()))

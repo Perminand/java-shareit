@@ -8,8 +8,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 import java.util.Objects;
@@ -42,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getDescription() == null || item.getDescription().isEmpty()) {
             throw new ValidationException("description не может быть null");
         }
-        if(item.getAvailable() == null) {
+        if (item.getAvailable() == null) {
             throw new ValidationException("available не может быть null");
         }
         Item newItem = ItemMapper.forItem(item);
@@ -57,16 +55,16 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id"));
         Item item = itemRepository.getById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id"));
-        if(!Objects.equals(item.getOwner().getId(), user.getId())) {
+        if (!Objects.equals(item.getOwner().getId(), user.getId())) {
             throw new EntityNotFoundException("Попытка изменения item не владельцем");
         }
-        if(itemDto.getName() != null) {
+        if (itemDto.getName() != null) {
             item.setName(itemDto.getName());
         }
-        if(itemDto.getDescription() != null) {
+        if (itemDto.getDescription() != null) {
             item.setDescription(itemDto.getDescription());
         }
-        if(itemDto.getAvailable() != null) {
+        if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
 

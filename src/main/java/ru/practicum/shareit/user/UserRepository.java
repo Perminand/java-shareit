@@ -6,7 +6,7 @@ import java.util.Optional;
 public interface UserRepository {
     List<User> getAll();
 
-    User create (User user);
+    User create(User user);
 
     Optional<User> getById(Long userId);
 

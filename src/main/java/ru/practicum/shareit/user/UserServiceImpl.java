@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validate(User user) {
-        if(Pattern.matches("^(.+)@(\\S+)$", user.getEmail())) {
+        if (Pattern.matches("^(.+)@(\\S+)$", user.getEmail())) {
             Optional<User> newUser = userRepository.getAll()
                     .stream()
                     .filter(u -> Objects.equals(u.getEmail(), user.getEmail()))
