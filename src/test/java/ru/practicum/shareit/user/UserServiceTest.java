@@ -19,6 +19,7 @@ class UserServiceTest {
     @Test
     void getAllUsers() {
         create();
+        Assertions.assertEquals(1, userService.getAllUsers().size());
     }
 
     @Test
@@ -28,13 +29,13 @@ class UserServiceTest {
         user.setEmail("ru1@ru.ru");
         userService.create(user);
         Assertions.assertEquals(1L, userService.getAllUsers().size());
-        DuplicatedDataException duplicatedDataException = assertThrows(DuplicatedDataException.class, () ->
+        assertThrows(DuplicatedDataException.class, () ->
                 userService.create(user));
         user.setEmail(null);
-        ValidationException validationException = assertThrows(ValidationException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 userService.create(user));
         user.setEmail("ru.com");
-        ValidationException validationException2 = assertThrows(ValidationException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 userService.create(user));
     }
 
@@ -57,7 +58,7 @@ class UserServiceTest {
         user2.setEmail("ru2@ru.ru");
         userService.create(user2);
         User finalUser = user;
-        DuplicatedDataException duplicatedDataException = assertThrows(DuplicatedDataException.class, () ->
+        assertThrows(DuplicatedDataException.class, () ->
                 userService.update(2L, finalUser));
         user.setEmail(null);
     }
