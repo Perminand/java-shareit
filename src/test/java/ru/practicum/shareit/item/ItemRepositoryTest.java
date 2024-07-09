@@ -9,13 +9,12 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserRepositoryImpl;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @TestComponent
 @RequiredArgsConstructor
 class ItemRepositoryTest {
 private final UserRepository userRepository = new UserRepositoryImpl();
 private final ItemRepository itemRepository = new ItemRepositoryImpl();
+
     @Test
     void getItems() {
         create();

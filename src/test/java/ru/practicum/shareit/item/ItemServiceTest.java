@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.TestComponent;
-import ru.practicum.shareit.exception.error.DuplicatedDataException;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepositoryImpl;
 import ru.practicum.shareit.user.UserService;
@@ -23,6 +21,7 @@ class ItemServiceTest {
     private final UserService userService = new UserServiceImpl(userRepository);
     private final ItemRepositoryImpl itemRepository = new ItemRepositoryImpl();
     private final ItemService itemService = new ItemServiceImpl(itemRepository, userRepository);
+
     @Test
     void getItemsByUserId() {
         create();
