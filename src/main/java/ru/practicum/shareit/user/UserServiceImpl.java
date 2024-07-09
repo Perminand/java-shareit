@@ -6,6 +6,7 @@ import ru.practicum.shareit.exception.error.DuplicatedDataException;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mappers.UserMapper;
 
 import java.util.List;
 import java.util.Objects;
