@@ -12,7 +12,7 @@ public class Item {
     private String name;
     private String description;
     private Boolean available;
-    private User Owner;
+    private User owner;
     private ItemRequest request;
 
     public Item(String name, String description) {
