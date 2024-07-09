@@ -70,6 +70,6 @@ class UserServiceTest {
         userService.create(user);
         int count = userService.getAllUsers().size();
         userService.deleteById(1L);
-        Assertions.assertEquals(count-1, userService.getAllUsers().size());
+        Assertions.assertEquals(count - 1, userService.getAllUsers().size());
     }
 }

@@ -36,7 +36,7 @@ class UserRepositoryTest {
         user2.setName("name2");
         user2.setEmail("ru2@ru.ru");
         userRepository.create(user2);
-        Assertions.assertEquals(user2.getEmail(), userRepository.getById(2l).get().getEmail());
+        Assertions.assertEquals(user2.getEmail(), userRepository.getById(2L).get().getEmail());
     }
 
     @Test
@@ -58,7 +58,7 @@ class UserRepositoryTest {
         user.setEmail("ru1@ru.ru");
         userRepository.create(user);
         int counts = userRepository.getAll().size();
-        userRepository.deleteById(1l);
+        userRepository.deleteById(1L);
         Assertions.assertEquals(counts - 1, userRepository.getAll().size());
     }
 }
