@@ -50,19 +50,26 @@ class UserServiceTest {
         user = userService.create(user);
         user.setName("updateName");
         userService.update(user.getId(), user);
+        user.setEmail("ru3@ru.ru");
+        userService.update(user.getId(), user);
         User user2 = new User();
         user2.setName("name2");
         user2.setEmail("ru2@ru.ru");
-        user2 = userService.create(user2);
+        userService.create(user2);
         User finalUser = user;
         DuplicatedDataException duplicatedDataException = assertThrows(DuplicatedDataException.class, () ->
                 userService.update(2L, finalUser));
         user.setEmail(null);
-
-        ;
     }
 
     @Test
     void deleteById() {
+        User user = new User();
+        user.setName("name2");
+        user.setEmail("ru2@ru.ru");
+        userService.create(user);
+        int count = userService.getAllUsers().size();
+        userService.deleteById(1L);
+        Assertions.assertEquals(count-1, userService.getAllUsers().size());
     }
 }

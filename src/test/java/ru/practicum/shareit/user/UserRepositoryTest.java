@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.TestComponent;
 
@@ -10,10 +9,6 @@ import org.springframework.boot.test.context.TestComponent;
 @RequiredArgsConstructor
 class UserRepositoryTest {
     private final UserRepository userRepository = new UserRepositoryImpl();
-
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     void create() {
