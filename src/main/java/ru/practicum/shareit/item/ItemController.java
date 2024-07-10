@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -8,6 +9,7 @@ import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -17,12 +19,14 @@ public class ItemController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Пришел GET запрос на метод getAll");
         return itemService.getItemsByUserId(userId);
     }
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public ItemDto getById(@PathVariable("itemId") long itemId) {
+        log.info("Пришел GET запрос на метод getById");
         return itemService.getById(itemId);
     }
 
@@ -30,6 +34,7 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Long userId,
                                 @RequestParam(name = "text") String text) {
+        log.info("Пришел GET запрос на метод search");
         return itemService.search(userId, text);
     }
 
@@ -37,6 +42,7 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+        log.info("Пришел Post запрос на метод create");
         return itemService.create(userId, itemDto);
     }
 
@@ -46,11 +52,13 @@ public class ItemController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @PathVariable("itemId") long itemId,
             @RequestBody ItemDto itemDto) {
+        log.info("Пришел Patch запрос на метод update");
         return itemService.update(userId, itemId, itemDto);
     }
 
     @DeleteMapping("/{itemId}")
     public void delete(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") long itemId) {
+        log.info("Пришел Delete запрос на метод delete");
         itemService.deleteItem(userId, itemId);
     }
 

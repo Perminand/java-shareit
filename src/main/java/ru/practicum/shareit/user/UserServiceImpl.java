@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.error.DuplicatedDataException;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
@@ -13,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -20,27 +22,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAllUsers() {
-        return userRepository.getAll().stream().map(UserMapper::toUserDto).toList();
+        log.info("==> /users ");
+        List<UserDto> finalUser = userRepository.getAll().stream().map(UserMapper::toUserDto).toList();
+        log.info(" <== {}", finalUser);
+        return finalUser;
     }
 
     @Override
     public User create(User user) {
+        log.info(" ==> /users/ {}", user);
         if (user.getEmail() == null) {
             throw new ValidationException("Должен быть емайл");
         }
         validate(user);
-        return userRepository.create(user);
+        User finalUser = userRepository.create(user);
+        log.info(" <== {}", finalUser);
+        return finalUser;
     }
 
     @Override
     public UserDto getById(long userId) {
-        UserDto user = UserMapper.toUserDto(userRepository.getById(userId)
+        log.info(" ==> /users/{}", userId);
+        UserDto finalUser = UserMapper.toUserDto(userRepository.getById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("user not found id :" + userId)));
-        return user;
+        log.info(" <== {}", finalUser);
+        return finalUser;
     }
 
     @Override
     public User update(long userId, User user) {
+        log.info(" ==> /users/{} {}", userId, user);
         User oldUser = userRepository.getById(userId).get();
         if (user.getEmail() != null) {
             if (!oldUser.getEmail().equals(user.getEmail())) {
@@ -51,12 +62,16 @@ public class UserServiceImpl implements UserService {
         if (user.getName() != null) {
             oldUser.setName(user.getName());
         }
-        return userRepository.update(oldUser);
+        User finalUser = userRepository.update(oldUser);
+        log.info(" <== {}", finalUser);
+        return finalUser;
     }
 
     @Override
     public void deleteById(long userId) {
+        log.info(" ==> /users/{}", userId);
         userRepository.deleteById(userId);
+        log.info(" <== OK");
     }
 
     private void validate(User user) {

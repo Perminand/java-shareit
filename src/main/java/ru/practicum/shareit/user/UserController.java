@@ -18,45 +18,37 @@ public class UserController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserDto> getAllUsers() {
-        log.info(" ==> GET /users ");
-        List<UserDto> users = userService.getAllUsers();
-        log.info(" <== {}", users);
-        return users;
+        log.info("Пришел GET запрос на метод getAllUsers");
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public UserDto getById(@PathVariable long userId) {
-        log.info(" ==> GET /users/{}", userId);
-        UserDto user = userService.getById(userId);
-        log.info(" <== {}", user);
-        return user;
+        log.info("Пришел GET запрос на метод getById");
+        return userService.getById(userId);
     }
 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User create(@RequestBody User user) {
-        log.info(" ==> POST /users/ {}", user);
-        User newUser = userService.create(user);
-        log.info(" <== {}", newUser);
-        return newUser;
+        log.info("Пришел Post запрос на метод create");
+        return userService.create(user);
     }
 
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public User update(@PathVariable long userId, @RequestBody User user) {
-        log.info(" ==> PATCH /users/ {}", user);
-        User newUser = userService.update(userId, user);
-        log.info(" <== {}", newUser);
-        return newUser;
+        log.info("Пришел Patch запрос на метод update");
+        return userService.update(userId, user);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteById(@PathVariable long userId) {
-        log.info(" ==> DELETE /users/{}", userId);
+        log.info("Пришел Delete запрос на метод deleteById");
         userService.deleteById(userId);
-        log.info(" <== OK");
+
     }
 }

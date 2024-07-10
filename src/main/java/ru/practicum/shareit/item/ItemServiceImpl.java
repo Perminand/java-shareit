@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
@@ -13,6 +14,7 @@ import ru.practicum.shareit.user.UserRepository;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -21,11 +23,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
+        log.info(" ==> GET /users ");
         return itemRepository.getItems(userId).stream().map(ItemMapper::toItemDto).toList();
     }
 
     @Override
     public ItemDto getById(long itemId) {
+
         return ItemMapper.toItemDto(itemRepository.getById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id")));
     }
