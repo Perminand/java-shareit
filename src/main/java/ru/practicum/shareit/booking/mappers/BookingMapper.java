@@ -6,7 +6,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 public class BookingMapper {
     public static BookingDto toBookingDto(Booking booking) {
         BookingDto bookingDto = new BookingDto();
-        bookingDto.setItem(booking.getItem());
+        bookingDto.setItemId(booking.getItem().getId());
         bookingDto.setStart(booking.getStart());
         bookingDto.setEnd(booking.getEnd());
         bookingDto.setId(booking.getId());

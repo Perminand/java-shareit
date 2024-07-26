@@ -34,7 +34,7 @@ public class BookingServiceImpl implements BookingService {
         log.info(" ==> /bookings ");
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
-        Item item = itemRepository.findById(bookingDto.getItem().getId())
+        Item item = itemRepository.findById(bookingDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + userId));
         if (!item.getAvailable()) {
             throw new ValidationException("item available = false");
