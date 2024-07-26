@@ -12,9 +12,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     //@Query(value = "select * from bookings where booker = ?1 sorted start_date desc", nativeQuery = true)
     List<Booking> findAllByBookerIdAndStatus(Long booker, StateUserBooking status, Sort sort);
 
-    List<Booking> findAllDistinctBookingByItem_Owner_Id(Long Id);
+    List<Booking> findAllDistinctBookingByItem_Owner_Id(Long id);
 
-    List<Booking> findAllDistinctBookingByItem_Owner_IdAndStatus(Long Id, StateUserBooking status);
+    List<Booking> findAllDistinctBookingByItem_Owner_IdAndStatus(Long id, StateUserBooking status);
 
     List<Booking> findAllByBookerId(Long userId, Sort sort);
 
