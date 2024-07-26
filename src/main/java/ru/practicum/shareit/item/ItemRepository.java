@@ -1,24 +1,23 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface ItemRepository {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> getItems(long userId);
 
-    Item create(long userId, Item item);
+    @Query(value = "select * from items where items.user_id=?1", nativeQuery = true)
+    List<Item> getItemsByOwner(long userId);
 
-    void deleteByUserIdAndItemId(long userId, long itemId);
+    @Query(value = "delete from items where user_id = ?1 and item_request_id=?2", nativeQuery = true)
+    void deleteByOwnerAndId(long userId, long itemId);
 
-    Optional<Item> getById(long itemId);
+    List<Item> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
 
-    Item update(Item item);
+//    @Query(value = )
+//    List<ItemInfoDto> getItemItemDto(long owner,);
 
-    List<Item> search(String text);
-
-    void createRequest(User user, String text);
 }

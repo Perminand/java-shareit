@@ -3,13 +3,16 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.request.RequestRepository;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,28 +20,31 @@ import java.util.Objects;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final RequestRepository requestRepository;
 
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
-        log.info(" ==> GET /users ");
-        return itemRepository.getItems(userId).stream().map(ItemMapper::toItemDto).toList();
+        log.info(" ==> GET /items ");
+        List<Item> itemList = itemRepository.getItemsByOwner(userId);
+        return itemList.stream().map(ItemMapper::toItemDto).toList();
     }
 
     @Override
     public ItemDto getById(long itemId) {
-
-        return ItemMapper.toItemDto(itemRepository.getById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id")));
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id"));
+        return ItemMapper.toItemDto(item);
     }
 
 
     @Override
+    @Transactional(readOnly = false)
     public ItemDto create(Long userId, ItemDto item) {
-        User user = userRepository.getById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id"));
         if (item.getName() == null || item.getName().isEmpty()) {
             throw new ValidationException("name не может быть null");
         }
@@ -48,17 +54,21 @@ public class ItemServiceImpl implements ItemService {
         if (item.getAvailable() == null) {
             throw new ValidationException("available не может быть null");
         }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
         Item newItem = ItemMapper.forItem(item);
         newItem.setOwner(user);
         newItem.setAvailable(item.getAvailable());
-        return ItemMapper.toItemDto(itemRepository.create(userId, newItem));
+        Item finishItem = itemRepository.save(newItem);
+        return ItemMapper.toItemDto(finishItem);
     }
 
     @Override
-    public Item update(Long userId, long itemId, ItemDto itemDto) {
-        User user = userRepository.getById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id"));
-        Item item = itemRepository.getById(itemId)
+    @Transactional
+    public ItemDto update(Long userId, long itemId, ItemDto itemDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id"));
         if (!Objects.equals(item.getOwner().getId(), user.getId())) {
             throw new EntityNotFoundException("Попытка изменения item не владельцем");
@@ -72,28 +82,34 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
-
-        return itemRepository.update(item);
+        Item finishItem = itemRepository.save(item);
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
     public List<ItemDto> search(Long userId, String text) {
         if (text.isBlank()) {
-            itemRepository.createRequest(userRepository.getById(userId)
-                    .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id")), text);
             return List.of();
-        } else {
-            return itemRepository.search(text)
-                    .stream()
-                    .filter(Item::getAvailable)
-                    .map(ItemMapper::toItemDto).toList();
         }
+        List<ItemDto> itemDtoList = itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(text, text)
+                .stream()
+                .filter(Item::getAvailable)
+                .map(ItemMapper::toItemDto).toList();
+        return itemDtoList;
+
     }
 
     @Override
     public void deleteItem(long userId, long itemId) {
-        itemRepository.deleteByUserIdAndItemId(userId, itemId);
+        itemRepository.deleteByOwnerAndId(userId, itemId);
     }
 
+//    List<ItemInfoDto> getAll() {
+//        List<Item> items = itemRepository.findAll();
+//        List<Long> itemIds = items.stream().map(Item::getId).toList();
+//        List<Booking> bookings = bookingRepository.findAllByIdsIn(itemIds);
+//        Map<Long, List<Booking>> ItemIdByBookings;
+//
+//    }
 
 }
