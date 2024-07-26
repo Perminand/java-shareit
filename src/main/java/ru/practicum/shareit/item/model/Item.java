@@ -1,8 +1,11 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import ru.practicum.shareit.request.ItemRequest;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 @Entity
@@ -10,8 +13,6 @@ import ru.practicum.shareit.user.model.User;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(of = {"id", "name", "description", "available"})
-@EqualsAndHashCode(of = {"id", "name", "description", "available"})
 @Table(name = "items")
 public class Item {
     @Id
@@ -25,7 +26,7 @@ public class Item {
     private Boolean available;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)

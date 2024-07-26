@@ -7,9 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.dto.ItemDto;
 import ru.practicum.shareit.request.RequestRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -26,6 +27,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final RequestRepository requestRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
@@ -36,8 +38,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getById(long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id"));
+        Item item = itemCheck(itemId);
         return ItemMapper.toItemDto(item);
     }
 
@@ -45,17 +46,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = false)
     public ItemDto create(Long userId, ItemDto item) {
-        if (item.getName() == null || item.getName().isEmpty()) {
-            throw new ValidationException("name не может быть null");
-        }
-        if (item.getDescription() == null || item.getDescription().isEmpty()) {
-            throw new ValidationException("description не может быть null");
-        }
-        if (item.getAvailable() == null) {
-            throw new ValidationException("available не может быть null");
-        }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
+        validate(item);
+        User user = userCheck(userId);
         Item newItem = ItemMapper.forItem(item);
         newItem.setOwner(user);
         newItem.setAvailable(item.getAvailable());
@@ -66,10 +58,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDto update(Long userId, long itemId, ItemDto itemDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id"));
+        User user = userCheck(userId);
+        Item item = itemCheck(itemId);
         if (!Objects.equals(item.getOwner().getId(), user.getId())) {
             throw new EntityNotFoundException("Попытка изменения item не владельцем");
         }
@@ -100,8 +90,39 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Comment createComment(Long userId, Long itemId, Comment comment) {
+        userCheck(userId);
+        List<Item> items = bookingRepository.findAllByBookerIdAndItemId(userId, comment.getItem().getId());
+        return null;
+    }
+
+    @Override
     public void deleteItem(long userId, long itemId) {
         itemRepository.deleteByOwnerAndId(userId, itemId);
+    }
+
+    private User userCheck(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
+
+    }
+
+    private Item itemCheck(long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + itemId));
+
+    }
+
+    private void validate(ItemDto item) {
+        if (item.getName() == null || item.getName().isEmpty()) {
+            throw new ValidationException("name не может быть null");
+        }
+        if (item.getDescription() == null || item.getDescription().isEmpty()) {
+            throw new ValidationException("description не может быть null");
+        }
+        if (item.getAvailable() == null) {
+            throw new ValidationException("available не может быть null");
+        }
     }
 
 //    List<ItemInfoDto> getAll() {

@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
-import ru.practicum.shareit.booking.state.StateUserBooking;
-import ru.practicum.shareit.booking.state.StatusBooking;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.dto.BookingDtoIn;
+import ru.practicum.shareit.booking.model.dto.BookingDtoOut;
+import ru.practicum.shareit.booking.state.BookingState;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
@@ -30,12 +31,96 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto create(Long userId, BookingDto bookingDto) {
+    public BookingDtoOut create(Long userId, BookingDtoIn bookingDto) {
         log.info(" ==> /bookings ");
-        User user = userRepository.findById(userId)
+        User user = userCheck(userId);
+        Item item = itemCheck(bookingDto.getItemId());
+        validate(item, bookingDto);
+        Booking booking = BookingMapper.toBooking(bookingDto);
+        booking.setBooker(user);
+        booking.setItem(item);
+        booking.setStatus(BookingState.WAITING);
+        bookingRepository.save(booking);
+        return BookingMapper.toBookingDtoOut(booking);
+    }
+
+    @Override
+    @Transactional
+    public BookingDtoOut confirmation(Long userId, long bookingId, boolean approved) {
+        userCheck(userId);
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет booking с заданным id: " + bookingId));
+        if (booking.getItem().getOwner().getId().equals(userId)) {
+            if (approved) {
+                booking.setStatus(BookingState.APPROVED);
+            } else {
+                booking.setStatus(BookingState.REJECTED);
+            }
+        }
+        bookingRepository.save(booking);
+        return BookingMapper.toBookingDtoOut(booking);
+    }
+
+    @Override
+    public BookingDtoOut getById(Long userId, long bookingId) {
+        userCheck(userId);
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет booking с заданным id: " + bookingId));
+        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
+            return BookingMapper.toBookingDtoOut(booking);
+        } else return null;
+    }
+
+    @Override
+    public List<BookingDtoOut> getAllForUser(Long userId, String state) {
+        BookingState from = BookingState.from(state);
+        if (from == null) {
+            throw new ValidationException("Unknow state: " + state);
+        }
+        userCheck(userId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        List<Booking> bookingList;
+        switch (from) {
+            case ALL:
+                bookingList = bookingRepository.findAllByBookerId(userId, sort);
+                break;
+            default:
+                bookingList = bookingRepository.findAllByBookerIdAndStatus(userId, from);
+        }
+        List<BookingDtoOut> bookingDtos = bookingList
+                .stream()
+                .map(BookingMapper::toBookingDtoOut)
+                .toList();
+        return bookingDtos;
+    }
+
+    @Override
+    public List<BookingDtoOut> getAllItemForUser(Long userId, BookingState state) {
+        userCheck(userId);
+        List<Booking> bookingList;
+        switch (state) {
+            case ALL:
+                bookingList = bookingRepository.findAllDistinctBookingByItem_Owner_Id(userId);
+                break;
+            default:
+                bookingList = bookingRepository.findAllDistinctBookingByItem_Owner_IdAndStatus(userId, state);
+        }
+        return List.of();
+    }
+
+    private User userCheck(long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
-        Item item = itemRepository.findById(bookingDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + userId));
+
+    }
+
+    private Item itemCheck(long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + itemId));
+
+    }
+
+    private void validate(Item item, BookingDtoIn bookingDto) {
         if (!item.getAvailable()) {
             throw new ValidationException("item available = false");
         }
@@ -50,73 +135,6 @@ public class BookingServiceImpl implements BookingService {
                 bookingDto.getStart().equals(bookingDto.getEnd())) {
             throw new ValidationException("end раньше start");
         }
-        Booking booking = BookingMapper.toBooking(bookingDto);
-        booking.setBooker(user);
-        booking.setItem(item);
-        booking.setStatus(StatusBooking.WAITING);
-        bookingRepository.save(booking);
-        return BookingMapper.toBookingDto(booking);
-    }
-
-    @Override
-    public BookingDto confirmation(Long userId, long bookingId, boolean approved) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет booking с заданным id: " + bookingId));
-        if (booking.getItem().getOwner().getId().equals(userId)) {
-            if (approved) {
-                booking.setStatus(StatusBooking.APPROED);
-            } else {
-                booking.setStatus(StatusBooking.CANCELED);
-            }
-        }
-        bookingRepository.save(booking);
-        return BookingMapper.toBookingDto(booking);
-    }
-
-    @Override
-    public BookingDto getById(Long userId, long bookingId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет booking с заданным id: " + bookingId));
-        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
-            return BookingMapper.toBookingDto(booking);
-        } else return null;
-    }
-
-    @Override
-    public List<BookingDto> getAllForUser(Long userId, StateUserBooking state) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        List<Booking> bookingList;
-        switch (state) {
-            case ALL:
-                bookingList = bookingRepository.findAllByBookerId(userId, sort);
-                break;
-            default:
-                bookingList = bookingRepository.findAllByBookerIdAndStatus(userId, state, sort);
-        }
-        List<BookingDto> bookingDtos = bookingList.stream()
-                .map(BookingMapper::toBookingDto).toList();
-        return bookingDtos;
-    }
-
-    @Override
-    public List<BookingDto> getAllItemForUser(Long userId, StateUserBooking state) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
-        List<Booking> bookingList;
-        switch (state) {
-            case ALL:
-                bookingList = bookingRepository.findAllDistinctBookingByItem_Owner_Id(userId);
-                break;
-            default:
-                bookingList = bookingRepository.findAllDistinctBookingByItem_Owner_IdAndStatus(userId, state);
-        }
-        return List.of();
     }
 
 

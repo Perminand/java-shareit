@@ -1,10 +1,10 @@
 package ru.practicum.shareit.item.mappers;
 
 
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemInfoDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.dto.ItemDto;
+import ru.practicum.shareit.item.model.dto.ItemInfoDto;
 
 public class ItemMapper {
     public static ItemInfoDto itemInfoDto(Item item, Booking lastBooking, Booking nextBooking) {

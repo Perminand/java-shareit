@@ -1,11 +1,11 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.booking.state.StatusBooking;
+import ru.practicum.shareit.booking.state.BookingState;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -37,7 +37,8 @@ public class Booking {
     private User booker;
 
     @Enumerated(EnumType.STRING)
-    private StatusBooking status;
+    @Column(name = "status")
+    private BookingState status;
 
     public Booking(Item itemId, User booker, LocalDateTime start, LocalDateTime end) {
         this.item = itemId;

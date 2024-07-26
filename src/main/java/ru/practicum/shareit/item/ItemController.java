@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.dto.ItemDto;
 
 import java.util.List;
 
@@ -43,6 +44,14 @@ public class ItemController {
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
         log.info("Пришел Post запрос на метод create");
         return itemService.create(userId, itemDto);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Comment createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @PathVariable Long itemId,
+                                 @RequestBody Comment comment) {
+        return itemService.createComment(userId, itemId, comment);
     }
 
     @PatchMapping("/{itemId}")
