@@ -20,6 +20,7 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody BookingDtoIn bookingDto) {
+        log.info("Пришел Post запрос на метод create");
         return bookingService.create(userId, bookingDto);
     }
 
@@ -28,6 +29,7 @@ public class BookingController {
     public BookingDto approveBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                      @PathVariable("bookingId") long bookingId,
                                      @RequestParam(name = "approved") String approved) {
+        log.info("Пришел Patch запрос на метод approveBooking");
         return bookingService.approveBooking(userId, bookingId, approved);
     }
 
@@ -35,7 +37,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.OK)
     public BookingDto getById(@RequestHeader("X-Sharer-User-Id") Long userId,
                               @PathVariable(name = "bookingId") long bookingId) {
-        log.info("Getting info for booking: {}", bookingId);
+        log.info("Пришел Get запрос на метод getById");
         return bookingService.getById(userId, bookingId);
     }
 
@@ -44,8 +46,8 @@ public class BookingController {
     public List<BookingDto> getAllForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @RequestParam(name = "state", required = false, defaultValue = "ALL")
                                           String state) {
-        List<BookingDto> bookingDtoOutList = bookingService.getAllForUser(userId, state);
-        return bookingDtoOutList;
+        log.info("Пришел Get запрос на метод getAllForUser");
+        return bookingService.getAllForUser(userId, state);
     }
 
     @GetMapping("/owner")
@@ -53,6 +55,7 @@ public class BookingController {
     public List<BookingDto> getAllItemForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                               @RequestParam(name = "state", required = false, defaultValue = "ALL")
                                               String state) {
+        log.info("Пришел Get запрос на метод getAllItemForUser");
         return bookingService.getAllBookingsByOwnerId(userId, state);
     }
 }

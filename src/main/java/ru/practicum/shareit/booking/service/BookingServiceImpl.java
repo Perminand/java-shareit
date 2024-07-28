@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +13,8 @@ import ru.practicum.shareit.booking.state.BookingState;
 import ru.practicum.shareit.booking.state.BookingStatus;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
-import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -26,19 +25,15 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private static final Sort SORT_DESC_START = Sort.by(Sort.Direction.DESC, "start");
-    private static final Sort SORT_ASC_ID = Sort.by(Sort.Direction.ASC, "id");
-
 
     @Override
     @Transactional
     public BookingDto create(Long userId, BookingDtoIn bookingDto) {
-        log.info(" ==> /bookings ");
         User user = userCheck(userId);
         Item item = itemCheck(bookingDto.getItemId());
         validate(userId, item, bookingDto);
@@ -106,11 +101,10 @@ public class BookingServiceImpl implements BookingService {
             case PAST -> bookingRepository.findAllByBookerIdAndPastStatus(userId, LocalDateTime.now(), SORT_DESC_START);
             case ALL -> bookingRepository.findAllByBooker_Id(userId, SORT_DESC_START);
         };
-        List<BookingDto> bookingDtos = bookingList
+        return bookingList
                 .stream()
                 .map(BookingMapper::toBookingDto)
                 .toList();
-        return bookingDtos;
     }
 
     @Override

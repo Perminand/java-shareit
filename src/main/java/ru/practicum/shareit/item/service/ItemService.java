@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
@@ -9,8 +9,6 @@ import java.util.List;
 public interface ItemService {
 
     List<ItemDto> getItemsByUserId(long userId);
-
-    ItemDto getById(long itemId);
 
     ItemDtoLite create(Long userId, ItemDto item);
 

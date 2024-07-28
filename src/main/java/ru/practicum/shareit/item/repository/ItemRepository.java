@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.repository;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,9 +12,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByOwner_Id(Long ownerId);
 
     List<Item> findByOwner_Id(Long ownerId, Sort sort);
-
-    @Query(value = "select * from items where items.owner_id=?1", nativeQuery = true)
-    List<Item> getItemsByOwner(long userId);
 
     @Query(value = "delete from items where owner_id = ?1 and item_request_id=?2", nativeQuery = true)
     void deleteByOwnerAndId(long userId, long itemId);

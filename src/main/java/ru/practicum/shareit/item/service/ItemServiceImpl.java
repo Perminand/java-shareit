@@ -1,7 +1,6 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
-import ru.practicum.shareit.request.RequestRepository;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -28,14 +28,12 @@ import java.util.stream.Collectors;
 import static ru.practicum.shareit.item.mappers.CommentMapper.toCommentDto;
 import static ru.practicum.shareit.item.mappers.ItemMapper.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
-    private final RequestRepository requestRepository;
     private final CommentRepository commentRepository;
 
     @Override
@@ -86,19 +84,12 @@ public class ItemServiceImpl implements ItemService {
                     .collect(Collectors.toList()));
         }
 
-        log.debug("Getting items by user Id : {} ", userFromDb.getId());
         List<ItemDto> results = new ArrayList<>();
         for (Item i : userItems) {
             results.add(toItemDtoWithBookingsAndComments(i, itemsWithBookingsMap.get(i), itemsWithCommentsMap.get(i)));
         }
 
         return results;
-    }
-
-    @Override
-    public ItemDto getById(long itemId) {
-        Item item = itemCheck(itemId);
-        return ItemMapper.toItemDto(item);
     }
 
     @Override
@@ -139,11 +130,10 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return List.of();
         }
-        List<ItemDto> itemDtoList = itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(text, text)
+        return itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(text, text)
                 .stream()
                 .filter(Item::getAvailable)
                 .map(ItemMapper::toItemDto).toList();
-        return itemDtoList;
 
     }
 

@@ -24,11 +24,6 @@ public class ItemInfoDto {
         Long id;
         Long bookerId;
     }
-
-//    public static class UserDto {
-//        Long id;
-//        Long name;
-//    }
 }
 
 

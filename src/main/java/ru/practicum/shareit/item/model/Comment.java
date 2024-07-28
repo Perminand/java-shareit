@@ -24,5 +24,4 @@ public class Comment {
     LocalDateTime created;
     @ManyToOne(fetch = FetchType.LAZY)
     private User author;
-    ;
 }

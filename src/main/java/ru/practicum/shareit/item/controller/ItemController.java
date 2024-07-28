@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
+import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class ItemController {
     public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                     @PathVariable Long itemId,
                                     @RequestBody CommentDto comment) {
+        log.info("Пришел Post запрос на метод createComment");
         return itemService.createComment(userId, itemId, comment);
     }
 

@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.state.BookingStatus;
-import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Item> findAllByBookerIdAndItemId(Long bookerId, Long itemId);
 
     List<Booking> findAllByBooker_Id(Long bookerId, Sort sort);
 
@@ -55,27 +53,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking b where b.booker.id = :bookerId AND b.end < :now")
     List<Booking> findAllByBookerIdAndPastStatus(Long bookerId, LocalDateTime now, Sort sort);
-
-    ////    @Query(value = "select * from bookings where booker_id = :booker AND status = :status order by start_date desc", nativeQuery = true)
-////    List<Booking> findAllByBookerIdAndStatus(Long booker, BookingStatus status);
-//
-//    List<Booking> findAllByBookerIdAndStatus(Long booker, BookingStatus status);
-//
-//    List<Booking> findAllDistinctBookingByItem_Owner_Id(Long id, Sort sort);
-//
-//    List<Booking> findAllDistinctBookingByItem_Owner_IdAndStartIsAfter(Long id, LocalDateTime start, Sort sort);
-//
-//    List<Booking> findAllByBookerId(Long userId, Sort sort);
-//
-
-//
-//    List<Booking> findByBooker_IdAndStartIsAfter(Long bookerId,
-//                                                          LocalDateTime start,
-//                                                          Sort sort
-//    );
-//
-//    List<Booking> findAllByStartIsAfterAndEndIsBefore(LocalDateTime start, LocalDateTime end);
-//
-//
-////    List<Booking> findAllByIdsIn(List<Long> itemIds);
 }
