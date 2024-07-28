@@ -1,11 +1,12 @@
 package ru.practicum.shareit.booking.state;
 
 public enum BookingState {
-    APPROVED,
-    CURRENT,
-    FUTURE,
+
     WAITING,
     REJECTED,
+    CURRENT,
+    FUTURE,
+    PAST,
     ALL;
 
     public static BookingState from(String state) {
@@ -16,5 +17,4 @@ public enum BookingState {
         }
         return null;
     }
-
 }

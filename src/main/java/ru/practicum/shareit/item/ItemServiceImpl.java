@@ -10,7 +10,7 @@ import ru.practicum.shareit.exception.error.ValidationException;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.dto.ItemDto;
+import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.request.RequestRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -112,7 +112,6 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + itemId));
 
     }
-
     private void validate(ItemDto item) {
         if (item.getName() == null || item.getName().isEmpty()) {
             throw new ValidationException("name не может быть null");

@@ -1,10 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -13,6 +10,7 @@ import ru.practicum.shareit.user.model.User;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString(of = {"id", "name", "description", "available"})
 @Table(name = "items")
 public class Item {
     @Id
