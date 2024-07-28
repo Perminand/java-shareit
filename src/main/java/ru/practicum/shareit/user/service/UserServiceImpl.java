@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.mappers.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.dto.UserDto;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.user.mappers.UserMapper.*;
@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
         if (userDto.getEmail() == null) {
             throw new ValidationException("Email is empty");
         }
+        validate(userDto);
         log.debug("Creating user : {}", userDto);
         return toUserDto(userRepository.save(toUser(userDto)));
     }
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
         return toUserDto(userFromRep);
     }
 
-    public List<UserDto> getAll() {
+    public List<UserDto> getAllUsers() {
         log.debug("Getting all users");
         return userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
@@ -63,4 +64,11 @@ public class UserServiceImpl implements UserService {
         log.debug("Deleting user by id: {}", id);
         userRepository.deleteById(userFromDb.getId());
     }
+
+    private void validate(UserDto user) {
+        if (!Pattern.matches("^(.+)@(\\S+)$", user.getEmail())) {
+            throw new ValidationException("Емайл не коррктен");
+        }
+    }
+
 }

@@ -14,7 +14,7 @@ public class CommentMapper {
 
     public static Comment toCommentDb(CommentDto commentDto, User author, Item item) {
         return Comment.builder()
-                .id(commentDto.getId() != null ? commentDto.getId() : 0L)
+                .id(commentDto.getId())
                 .author(author)
                 .item(item)
                 .text(commentDto.getText())

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.dto.BookingDto;
 import ru.practicum.shareit.booking.model.dto.BookingDtoIn;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.state.BookingState;
 import ru.practicum.shareit.booking.state.BookingStatus;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
@@ -83,9 +84,10 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getById(Long userId, long bookingId) {
         userCheck(userId);
         Booking booking = bookingCheck(bookingId);
-        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
-            return BookingMapper.toBookingDto(booking);
-        } else throw new EntityNotFoundException("Booking: No booking for the specified user");
+        if (!Objects.equals(booking.getItem().getOwner().getId(), userId) && !Objects.equals(booking.getBooker().getId(), userId)) {
+            throw new EntityNotFoundException("User with id = " + userId + " is not an owner!");
+        }
+        return BookingMapper.toBookingDto(booking);
     }
 
     @Override

@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.state.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
+import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
 import ru.practicum.shareit.item.model.dto.item.ItemInfoDto;
 
 import java.time.LocalDateTime;
@@ -29,7 +30,18 @@ public class ItemMapper {
     }
 
     public static ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
+        ItemDto itemdto = ItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .comments(new ArrayList<>())
+                .build();
+        return itemdto;
+    }
+
+    public static ItemDtoLite toItemDtoLite(Item item) {
+        return ItemDtoLite.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
@@ -37,7 +49,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static Item forItem(ItemDto itemDto) {
+    public static Item toItem(ItemDto itemDto) {
         return new Item(
                 itemDto.getName(),
                 itemDto.getDescription());

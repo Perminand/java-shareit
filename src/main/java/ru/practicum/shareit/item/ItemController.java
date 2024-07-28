@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
+import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
 
 import java.util.List;
 
@@ -41,22 +42,22 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+    public ItemDtoLite create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
         log.info("Пришел Post запрос на метод create");
         return itemService.create(userId, itemDto);
     }
 
     @PostMapping("/{itemId}/comment")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Comment createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                 @PathVariable Long itemId,
-                                 @RequestBody Comment comment) {
+    @ResponseStatus(HttpStatus.OK)
+    public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                    @PathVariable Long itemId,
+                                    @RequestBody CommentDto comment) {
         return itemService.createComment(userId, itemId, comment);
     }
 
     @PatchMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto update(
+    public ItemDtoLite update(
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @PathVariable("itemId") long itemId,
             @RequestBody ItemDto itemDto) {
