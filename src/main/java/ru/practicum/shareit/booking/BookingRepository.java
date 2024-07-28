@@ -36,7 +36,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByOwnerItemsAndCurrentStatus(List<Long> itemsIds, LocalDateTime now, Sort sort);
 
     @Query("select b from Booking b where b.item.id IN :itemsIds AND b.start > :now")
-    List<Booking> findAllByOwnerItemsAndFutureStatus(List<Long> itemsIds, LocalDateTime now, Sort sort);
+    List<Booking> findAllByOwnerItemsAndFuture(List<Long> itemsIds, LocalDateTime now, Sort sort);
 
     @Query("select b from Booking b where b.item.id IN :itemsIds AND b.end < :now")
     List<Booking> findAllByOwnerItemsAndPastStatus(List<Long> itemsIds, LocalDateTime now, Sort sort);

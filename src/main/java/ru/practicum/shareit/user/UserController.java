@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.dto.UserDto;
 
 import java.util.List;
@@ -33,16 +32,17 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@RequestBody User user) {
+    public UserDto create(@RequestBody UserDto user) {
         log.info("Пришел Post запрос на метод create");
         return userService.create(user);
     }
 
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public User update(@PathVariable long userId, @RequestBody User user) {
+    public UserDto update(@PathVariable long userId, @RequestBody UserDto userDto) {
         log.info("Пришел Patch запрос на метод update");
-        return userService.update(userId, user);
+        userDto.setId(userId);
+        return userService.update(userDto);
     }
 
     @DeleteMapping("/{userId}")

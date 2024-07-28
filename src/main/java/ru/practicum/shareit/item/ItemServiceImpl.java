@@ -5,18 +5,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.mappers.BookingMapper;
+import ru.practicum.shareit.booking.model.dto.BookingDto;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
+import ru.practicum.shareit.item.mappers.CommentMapper;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.request.RequestRepository;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.item.mappers.ItemMapper.*;
 
 @Slf4j
 @Service
@@ -30,11 +37,39 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
+    public ItemDto getItemById(long itemId, long userId) {
+        userCheck(userId);
+        List<CommentDto> commentsForItem = commentRepository.findAllByItem_Id(itemId)
+                .stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+        List<BookingDto> bookingsForItem = getOwnerBooking(userId)
+                .stream()
+                .filter(x -> x.getItem().getId().equals(itemId))
+                .collect(Collectors.toList());
+
+        if (!bookingsForItem.isEmpty() && !commentsForItem.isEmpty()) {
+            return toItemDtoWithBookingsAndComments(itemRepository.findById(itemId)
+                    .orElseThrow(() -> new EntityNotFoundException("There is no Item with Id: " + itemId)), bookingsForItem, commentsForItem);
+        } else if (!bookingsForItem.isEmpty()) {
+            return toItemDtoWithBookings(itemRepository.findById(itemId)
+                    .orElseThrow(() -> new EntityNotFoundException("There is no Item with Id: " + itemId)), bookingsForItem);
+        } else if (!commentsForItem.isEmpty()) {
+            return toItemDtoWithComments(itemRepository.findById(itemId)
+                    .orElseThrow(() -> new EntityNotFoundException("There is no Item with Id: " + itemId)), commentsForItem);
+        } else {
+            return toItemDto(itemRepository.findById(itemId)
+                    .orElseThrow(() -> new EntityNotFoundException("There is no Item with Id: " + itemId)));
+        }
+    }
+
+    @Override
     public List<ItemDto> getItemsByUserId(long userId) {
         log.info(" ==> GET /items ");
         List<Item> itemList = itemRepository.getItemsByOwner(userId);
         return itemList.stream().map(ItemMapper::toItemDto).toList();
     }
+
 
     @Override
     public ItemDto getById(long itemId) {
@@ -44,7 +79,7 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public ItemDto create(Long userId, ItemDto item) {
         validate(item);
         User user = userCheck(userId);
@@ -125,12 +160,10 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-//    List<ItemInfoDto> getAll() {
-//        List<Item> items = itemRepository.findAll();
-//        List<Long> itemIds = items.stream().map(Item::getId).toList();
-//        List<Booking> bookings = bookingRepository.findAllByIdsIn(itemIds);
-//        Map<Long, List<Booking>> ItemIdByBookings;
-//
-//    }
-
+    private List<BookingDto> getOwnerBooking(Long ownerId) {
+        return bookingRepository.findAllByItem_Owner_Id(ownerId)
+                .stream()
+                .map(BookingMapper::toBookingDto)
+                .collect(Collectors.toList());
+    }
 }

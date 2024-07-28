@@ -10,4 +10,20 @@ public class UserMapper {
                 user.getName(),
                 user.getEmail());
     }
+
+    public static User toUser(UserDto userDto) {
+        return User.builder()
+                .id(userDto.getId() != null ? userDto.getId() : 0)
+                .name(userDto.getName())
+                .email(userDto.getEmail())
+                .build();
+    }
+
+    public static User toUserUpdate(UserDto userDto, User user) {
+        return User.builder()
+                .id(userDto.getId())
+                .name(userDto.getName() != null ? userDto.getName() : user.getName())
+                .email(userDto.getEmail() != null ? userDto.getEmail() : user.getEmail())
+                .build();
+    }
 }

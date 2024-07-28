@@ -1,89 +1,66 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
+import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.mappers.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.dto.UserDto;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-@Slf4j
+import static ru.practicum.shareit.user.mappers.UserMapper.*;
+
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
 
     @Override
-    public List<UserDto> getAllUsers() {
-        log.info("==> /users ");
-        List<UserDto> finalUser = userRepository
-                .findAll()
-                .stream()
-                .map(user -> UserMapper.toUserDto((User) user))
-                .toList();
-        log.info(" <== {}", finalUser);
-        return finalUser;
+    public UserDto create(UserDto userDto) {
+        if (userDto.getEmail() == null) {
+            throw new ValidationException("Email is empty");
+        }
+        log.debug("Creating user : {}", userDto);
+        return toUserDto(userRepository.save(toUser(userDto)));
     }
 
     @Override
-    public User create(User user) {
-        log.info(" ==> /users/ {}", user);
-        if (user.getEmail() == null) {
-            throw new ValidationException("Должен быть емайл");
-        }
-        validate(user);
-        User finalUser = (User) userRepository.save(user);
-        log.info(" <== {}", finalUser);
-        return finalUser;
+    public UserDto getById(long id) {
+        log.debug("Getting user by Id: {}", id);
+        User userFromRep = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("There is no User with id: " + id));
+        return toUserDto(userFromRep);
+    }
+
+    public List<UserDto> getAll() {
+        log.debug("Getting all users");
+        return userRepository.findAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public UserDto getById(long userId) {
-        log.info(" ==> /users/{}", userId);
-        User u = null;
-        try {
-            u = (User) userRepository.findById(userId).get();
-        } catch (Throwable e) {
-            throw new EntityNotFoundException("user not found id :" + userId);
-        }
-        UserDto finalUser = UserMapper.toUserDto(u);
-        log.info(" <== {}", finalUser);
-        return finalUser;
+    public UserDto update(UserDto userDto) {
+        log.debug("Updating user: {}", userDto);
+        User userToUpdate = toUserUpdate(userDto, userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("There is no User with id: " + userDto.getId())));
+        userRepository.save(userToUpdate);
+        return toUserDto(userToUpdate);
     }
 
     @Override
-    public User update(long userId, User user) {
-        log.info(" ==> /users/{} {}", userId, user);
-        User oldUser = (User) userRepository.getById(userId);
-        if (user.getEmail() != null) {
-            if (!oldUser.getEmail().equals(user.getEmail())) {
-                validate(user);
-                oldUser.setEmail(user.getEmail());
-            }
-        }
-        if (user.getName() != null) {
-            oldUser.setName(user.getName());
-        }
-        User finalUser = (User) userRepository.save(oldUser);
-        log.info(" <== {}", finalUser);
-        return finalUser;
-    }
-
-    @Override
-    public void deleteById(long userId) {
-        log.info(" ==> /users/{}", userId);
-        userRepository.deleteById(userId);
-        log.info(" <== OK");
-    }
-
-    private void validate(User user) {
-        if (!Pattern.matches("^(.+)@(\\S+)$", user.getEmail())) {
-            throw new ValidationException("Емайл не коррктен");
-        }
+    public void deleteById(long id) {
+        User userFromDb = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("There is no User with id: " + id));
+        log.debug("Deleting user by id: {}", id);
+        userRepository.deleteById(userFromDb.getId());
     }
 }

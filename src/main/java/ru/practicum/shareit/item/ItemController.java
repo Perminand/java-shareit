@@ -25,9 +25,9 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto getById(@PathVariable("itemId") long itemId) {
+    public ItemDto getById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") long itemId) {
         log.info("Пришел GET запрос на метод getById");
-        return itemService.getById(itemId);
+        return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping("/search")
