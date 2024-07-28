@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findAllByBooker_Id(Long bookerId, Sort sort);
+    List<Booking> findAllByBookerId(Long bookerId, Sort sort);
 
-    List<Booking> findAllByItem_Owner_Id(Long ownerId);
+    List<Booking> findAllByItemOwnerId(Long ownerId);
 
     @Query("select b from Booking b where b.item.id = :itemId AND b.booker.id = :bookerId AND b.end <= :now")
     List<Booking> findAllByUserIdAndItemIdAndEndDateIsPassed(Long bookerId, Long itemId, LocalDateTime now);

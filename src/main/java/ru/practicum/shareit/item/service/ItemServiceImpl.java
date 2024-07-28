@@ -38,7 +38,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItemById(long itemId, long userId) {
-        userCheck(userId);
+        userGet(userId);
         List<CommentDto> commentsForItem = commentRepository.findAllByItem_Id(itemId)
                 .stream()
                 .map(CommentMapper::toCommentDto)
@@ -65,9 +65,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
-        User userFromDb = userCheck(userId);
+        User userFromDb = userGet(userId);
 
-        List<Item> userItems = itemRepository.findByOwner_Id(userFromDb.getId(), Sort.by(Sort.Direction.ASC, "id"));
+        List<Item> userItems = itemRepository.findByOwnerId(userFromDb.getId(), Sort.by(Sort.Direction.ASC, "id"));
         List<CommentDto> commentsToUserItems = commentRepository.findAllByItemsUserId(userId, Sort.by(Sort.Direction.DESC, "created"))
                 .stream().map(CommentMapper::toCommentDto).toList();
         List<BookingDto> bookingsToUserItems = getOwnerBooking(userId);
@@ -96,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDtoLite create(Long userId, ItemDto item) {
         validate(item);
-        User user = userCheck(userId);
+        User user = userGet(userId);
         Item newItem = ItemMapper.toItem(item);
         newItem.setOwner(user);
         newItem.setAvailable(item.getAvailable());
@@ -107,8 +107,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDtoLite update(Long userId, long itemId, ItemDto itemDto) {
-        User user = userCheck(userId);
-        Item item = itemCheck(itemId);
+        User user = userGet(userId);
+        Item item = itemGet(itemId);
         if (!Objects.equals(item.getOwner().getId(), user.getId())) {
             throw new EntityNotFoundException("Попытка изменения item не владельцем");
         }
@@ -143,7 +143,7 @@ public class ItemServiceImpl implements ItemService {
         if (commentDto.getText().isEmpty()) {
             throw new ValidationException("Comment text cant be empty!");
         }
-        User author = userCheck(userId);
+        User author = userGet(userId);
         List<BookingDto> bookings = bookingRepository.findAllByUserIdAndItemIdAndEndDateIsPassed(userId, itemId, LocalDateTime.now())
                 .stream()
                 .map(BookingMapper::toBookingDto)
@@ -151,7 +151,7 @@ public class ItemServiceImpl implements ItemService {
         if (bookings.isEmpty()) {
             throw new ValidationException("This user has no booking");
         }
-        Item item = itemCheck(itemId);
+        Item item = itemGet(itemId);
         commentDto.setCreated(LocalDateTime.now());
         Comment comment = CommentMapper.toCommentDb(commentDto, author, item);
         Comment commentDtoOut = commentRepository.save(comment);
@@ -165,13 +165,13 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.deleteByOwnerAndId(userId, itemId);
     }
 
-    private User userCheck(long userId) {
+    private User userGet(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
 
     }
 
-    private Item itemCheck(long itemId) {
+    private Item itemGet(long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + itemId));
 
@@ -190,7 +190,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private List<BookingDto> getOwnerBooking(Long ownerId) {
-        return bookingRepository.findAllByItem_Owner_Id(ownerId)
+        return bookingRepository.findAllByItemOwnerId(ownerId)
                 .stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());

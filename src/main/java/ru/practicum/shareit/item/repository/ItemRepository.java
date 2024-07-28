@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> findByOwner_Id(Long ownerId);
+    List<Item> findByOwnerId(Long ownerId);
 
-    List<Item> findByOwner_Id(Long ownerId, Sort sort);
+    List<Item> findByOwnerId(Long ownerId, Sort sort);
 
     @Query(value = "delete from items where owner_id = ?1 and item_request_id=?2", nativeQuery = true)
     void deleteByOwnerAndId(long userId, long itemId);

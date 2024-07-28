@@ -34,8 +34,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto create(Long userId, BookingDtoIn bookingDto) {
-        User user = userCheck(userId);
-        Item item = itemCheck(bookingDto.getItemId());
+        User user = userGet(userId);
+        Item item = itemGet(bookingDto.getItemId());
         validate(userId, item, bookingDto);
         Booking booking = BookingMapper.toBooking(bookingDto);
         booking.setBooker(user);
@@ -48,7 +48,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto approveBooking(Long ownerId, long bookingId, String approved) {
-        userCheck(ownerId);
+        userGet(ownerId);
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет booking с заданным id: " + bookingId));
 
@@ -77,8 +77,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getById(Long userId, long bookingId) {
-        userCheck(userId);
-        Booking booking = bookingCheck(bookingId);
+        userGet(userId);
+        Booking booking = bookingGet(bookingId);
         if (!Objects.equals(booking.getItem().getOwner().getId(), userId) && !Objects.equals(booking.getBooker().getId(), userId)) {
             throw new EntityNotFoundException("User with id = " + userId + " is not an owner!");
         }
@@ -87,8 +87,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllForUser(Long userId, String state) {
-        BookingState from = bookingStateCheck(state);
-        userCheck(userId);
+        BookingState from = bookingStateGet(state);
+        userGet(userId);
         List<Booking> bookingList = switch (from) {
             case WAITING ->
                     bookingRepository.findAllByBookerIdAndWaitingStatus(userId, BookingStatus.WAITING, SORT_DESC_START);
@@ -99,7 +99,7 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE ->
                     bookingRepository.findAllByBookerIdAndFutureStatus(userId, LocalDateTime.now(), SORT_DESC_START);
             case PAST -> bookingRepository.findAllByBookerIdAndPastStatus(userId, LocalDateTime.now(), SORT_DESC_START);
-            case ALL -> bookingRepository.findAllByBooker_Id(userId, SORT_DESC_START);
+            case ALL -> bookingRepository.findAllByBookerId(userId, SORT_DESC_START);
         };
         return bookingList
                 .stream()
@@ -109,9 +109,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingsByOwnerId(Long ownerId, String state) {
-        BookingState from = bookingStateCheck(state);
-        userCheck(ownerId);
-        List<Long> userItemsIds = itemRepository.findByOwner_Id(ownerId).stream()
+        BookingState from = bookingStateGet(state);
+        userGet(ownerId);
+        List<Long> userItemsIds = itemRepository.findByOwnerId(ownerId).stream()
                 .map(Item::getId)
                 .toList();
         if (userItemsIds.isEmpty()) {
@@ -133,25 +133,25 @@ public class BookingServiceImpl implements BookingService {
         return bookingList.stream().map(BookingMapper::toBookingDto).toList();
     }
 
-    private User userCheck(long userId) {
+    private User userGet(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking: There is no Users with Id: " + userId));
 
     }
 
-    private Item itemCheck(long itemId) {
+    private Item itemGet(long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking: There is no Items with Id: " + itemId));
 
     }
 
-    private Booking bookingCheck(long bookingId) {
+    private Booking bookingGet(long bookingId) {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking: There is no Booking with Id: " + bookingId));
 
     }
 
-    private BookingState bookingStateCheck(String state) {
+    private BookingState bookingStateGet(String state) {
         BookingState from = BookingState.from(state);
         if (from == null) {
             throw new ValidationException("Unknown state: " + state);
