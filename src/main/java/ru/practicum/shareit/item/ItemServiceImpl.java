@@ -112,6 +112,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + itemId));
 
     }
+
     private void validate(ItemDto item) {
         if (item.getName() == null || item.getName().isEmpty()) {
             throw new ValidationException("name не может быть null");
