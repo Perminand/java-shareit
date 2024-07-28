@@ -172,7 +172,7 @@ public class BookingServiceImpl implements BookingService {
                 || bookingDto.getEnd().isBefore(LocalDateTime.now()) || bookingDto.getStart().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Booking: Problem in dates");
         }
-        if (item.getOwner().getId() == item.getOwner().getId()) {
+        if (Objects.equals(item.getOwner().getId(), item.getOwner().getId())) {
             throw new EntityNotFoundException("Booking: Owner can't book his item");
         }
     }
