@@ -9,7 +9,6 @@ import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
 
 @RestControllerAdvice("ru.practicum.shareit")
-
 public class ErrorHandle {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
