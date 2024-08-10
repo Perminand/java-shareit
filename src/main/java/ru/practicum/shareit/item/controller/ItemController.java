@@ -49,7 +49,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                     @PathVariable Long itemId,
                                     @RequestBody CommentDto comment) {
