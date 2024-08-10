@@ -19,6 +19,6 @@ public class ItemRequestMapper {
     }
 
     public static ItemRequestDtoLite toItemRequestDtoLite(ItemRequest itemRequest) {
-        return new ItemRequestDtoLite((itemRequest.getDescription()),itemRequest.getCreated());
+        return new ItemRequestDtoLite(itemRequest.getId(), itemRequest.getDescription(),itemRequest.getCreated(), null);
     }
 }
