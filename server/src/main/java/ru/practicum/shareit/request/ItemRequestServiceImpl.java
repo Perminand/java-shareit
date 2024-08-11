@@ -12,6 +12,7 @@ import ru.practicum.shareit.request.model.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.dto.ItemRequestDtoLite;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+
 import java.util.List;
 
 @Service
@@ -42,8 +43,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> findItemRequestOwnerUser(Long userId, int from, int size) {
         userGet(userId);
-        List<ItemRequestDto> itemRequests = requestRepository.findAllNotInUser(userId, PageRequest.of(from, size),
-                Sort.by(Sort.Direction.DESC, "created"))
+        List<ItemRequestDto> itemRequests = requestRepository
+                .findByUser_IdNot(userId, PageRequest.of(from, size, Sort.by("created").descending()))
                 .stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .toList();
