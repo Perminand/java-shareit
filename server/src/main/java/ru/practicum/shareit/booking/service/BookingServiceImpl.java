@@ -86,10 +86,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllForUser(Long userId, String state) {
-        BookingState from = bookingStateGet(state);
+    public List<BookingDto> getAllForUser(Long userId, BookingState state) {
         userGet(userId);
-        List<Booking> bookingList = switch (from) {
+        List<Booking> bookingList = switch (state) {
             case WAITING ->
                     bookingRepository.findAllByBookerIdAndWaitingStatus(userId, BookingStatus.WAITING, SORT_DESC_START);
             case REJECTED ->
@@ -109,7 +108,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingsByOwnerId(Long ownerId, String state) {
-        BookingState from = bookingStateGet(state);
+        BookingState from = BookingState.from(state).get();
         userGet(ownerId);
         List<Long> userItemsIds = itemRepository.findByOwnerId(ownerId).stream()
                 .map(Item::getId)
@@ -149,14 +148,6 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking: There is no Booking with Id: " + bookingId));
 
-    }
-
-    private BookingState bookingStateGet(String state) {
-        BookingState from = BookingState.from(state);
-        if (from == null) {
-            throw new ValidationException("Unknown state: " + state);
-        }
-        return from;
     }
 
     private void validate(Long userId, Item item, BookingDtoIn bookingDto) {

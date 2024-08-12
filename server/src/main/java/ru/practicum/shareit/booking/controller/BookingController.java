@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.model.dto.BookingDto;
 import ru.practicum.shareit.booking.model.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.booking.state.BookingState;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody BookingDtoIn bookingDto) {
-        log.info("Пришел Post запрос на метод create");
+        log.info("Creating booking {}, userId={}", bookingDto, userId);
         return bookingService.create(userId, bookingDto);
     }
 
@@ -37,7 +38,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.OK)
     public BookingDto getById(@RequestHeader("X-Sharer-User-Id") Long userId,
                               @PathVariable(name = "bookingId") long bookingId) {
-        log.info("Пришел Get запрос на метод getById");
+        log.info("Get booking {}, userId={}", bookingId, userId);
         return bookingService.getById(userId, bookingId);
     }
 
@@ -45,8 +46,11 @@ public class BookingController {
     @ResponseStatus(HttpStatus.OK)
     public List<BookingDto> getAllForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @RequestParam(name = "state", required = false, defaultValue = "ALL")
-                                          String state) {
-        log.info("Пришел Get запрос на метод getAllForUser");
+                                          String stateParam) {
+        BookingState state = BookingState.from(stateParam)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+        log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId);
+//        realise check user
         return bookingService.getAllForUser(userId, state);
     }
 
