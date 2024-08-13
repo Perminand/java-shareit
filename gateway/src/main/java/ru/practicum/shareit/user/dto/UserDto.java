@@ -1,6 +1,5 @@
-package ru.practicum.shareit.user.model.dto;
+package ru.practicum.shareit.user.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

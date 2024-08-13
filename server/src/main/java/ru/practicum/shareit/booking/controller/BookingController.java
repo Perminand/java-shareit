@@ -49,7 +49,7 @@ public class BookingController {
                                           String stateParam) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-        log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId);
+        log.info("Get booking with state {}", stateParam, userId);
 //        realise check user
         return bookingService.getAllForUser(userId, state);
     }
