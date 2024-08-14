@@ -21,14 +21,14 @@ public class ItemController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Пришел GET запрос на метод getAll");
+        log.info("Get userId = {}", userId);
         return itemService.getItemsByUserId(userId);
     }
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public ItemDto getById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") long itemId) {
-        log.info("Пришел GET запрос на метод getById");
+        log.info("Get userId = {}, itemId = {}", userId, itemId);
         return itemService.getItemById(itemId, userId);
     }
 
@@ -36,7 +36,7 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Long userId,
                                 @RequestParam(name = "text") String text) {
-        log.info("Пришел GET запрос на метод search");
+        log.info("Get userId = {}, text = {}", userId, text);
         return itemService.search(userId, text);
     }
 
@@ -44,7 +44,7 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDtoLite create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
-        log.info("Пришел Post запрос на метод create");
+        log.info("Post userId = {}, itemDto = {}", userId, itemDto);
         return itemService.create(userId, itemDto);
     }
 
@@ -53,7 +53,7 @@ public class ItemController {
     public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                     @PathVariable Long itemId,
                                     @RequestBody CommentDto comment) {
-        log.info("Пришел Post запрос на метод createComment");
+        log.info("Post userId = {}, itemId = {}, comment = {}", userId, itemId, comment);
         return itemService.createComment(userId, itemId, comment);
     }
 
@@ -64,13 +64,13 @@ public class ItemController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @PathVariable("itemId") long itemId,
             @RequestBody ItemDto itemDto) {
-        log.info("Пришел Patch запрос на метод update");
+        log.info("Patch userId = {}, itemId = {}, item = {}", userId, itemId, itemDto);
         return itemService.update(userId, itemId, itemDto);
     }
 
     @DeleteMapping("/{itemId}")
     public void delete(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") long itemId) {
-        log.info("Пришел Delete запрос на метод delete");
+        log.info("Delete userId = {}, itemId = {}", userId, itemId);
         itemService.deleteItem(userId, itemId);
     }
 

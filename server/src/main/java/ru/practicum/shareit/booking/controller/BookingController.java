@@ -30,7 +30,7 @@ public class BookingController {
     public BookingDto approveBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                      @PathVariable("bookingId") long bookingId,
                                      @RequestParam(name = "approved") String approved) {
-        log.info("Пришел Patch запрос на метод approveBooking");
+        log.info("Approve userId = {}, bookingId = {}, approved = {}", userId, bookingId, approved);
         return bookingService.approveBooking(userId, bookingId, approved);
     }
 
@@ -47,10 +47,9 @@ public class BookingController {
     public List<BookingDto> getAllForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @RequestParam(name = "state", required = false, defaultValue = "ALL")
                                           String stateParam) {
+        log.info("Get userId = {},  state = {}", userId, stateParam);
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-        log.info("Get booking with state {}", stateParam, userId);
-//        realise check user
         return bookingService.getAllForUser(userId, state);
     }
 
@@ -59,7 +58,7 @@ public class BookingController {
     public List<BookingDto> getAllItemForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                               @RequestParam(name = "state", required = false, defaultValue = "ALL")
                                               String state) {
-        log.info("Пришел Get запрос на метод getAllItemForUser");
+        log.info("Get userId = {}, state = {}", userId, state);
         return bookingService.getAllBookingsByOwnerId(userId, state);
     }
 }

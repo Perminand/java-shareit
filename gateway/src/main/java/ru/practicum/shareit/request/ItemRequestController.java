@@ -6,9 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.RequestClient;
-
-import java.util.List;
 
 /**
  * TODO Sprint add-item-requests.
@@ -24,7 +21,7 @@ public class ItemRequestController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> getItemRequestForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                         @PathVariable(value = "requestId", required = false) Long requestId) {
-
+        log.info("Get userId = {}, requestId = {}", userId, requestId);
         return requestClient.findByUserId(userId);
     }
 
@@ -32,24 +29,25 @@ public class ItemRequestController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> getItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                  @PathVariable(value = "requestId") Long requestId) {
+        log.info("Get userId = {}, requestId = {}", userId, requestId);
         return requestClient.getItemRequest(userId, requestId);
     }
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemRequestDto> getItemRequestOwnerUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> getItemRequestOwnerUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                         @RequestParam(name = "from") int from,
                                                         @RequestParam(name = "size") int size) {
-
+        log.info("Get userId = {}, from = {}, size = {}", userId, from, size);
         return requestClient.findItemRequestOwnerUser(userId, from, size);
 
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemRequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
                                             @RequestBody ItemRequestDto itemRequestDto) {
-        log.info("Пришел Post запрос на метод createItemRequest");
+        log.info("Post userId = {}, itemRequest = {}", userId, itemRequestDto);
         return requestClient.create(userId, itemRequestDto);
     }
 }

@@ -19,14 +19,15 @@ public class ItemController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Пришел GET запрос на метод getAll");
+        log.info("Get userId = {}", userId);
         return itemClient.getItemsByUserId(userId);
     }
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") long itemId) {
-        log.info("Пришел GET запрос на метод getById");
+    public ResponseEntity<Object> getById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                          @PathVariable("itemId") long itemId) {
+        log.info("Get userId = {}, itemId = {}", userId, itemId);
         return itemClient.getItemById(itemId, userId);
     }
 
@@ -34,15 +35,16 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> search(@RequestHeader("X-Sharer-User-Id") Long userId,
                                          @RequestParam(name = "text") String text) {
-        log.info("Пришел GET запрос на метод search");
+        log.info("Get userId = {}, text = {}", userId, text);
         return itemClient.search(userId, text);
     }
 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
-        log.info("Пришел Post запрос на метод create");
+    public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @RequestBody ItemDto itemDto) {
+        log.info("Post userId = {}, item = {}", userId, itemDto);
         return itemClient.create(userId, itemDto);
     }
 
@@ -51,7 +53,7 @@ public class ItemController {
     public ResponseEntity<Object> createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                 @PathVariable Long itemId,
                                                 @RequestBody CommentDto comment) {
-        log.info("Пришел Post запрос на метод createComment");
+        log.info("Post userId = {}, itemId = {}, comment = {}", userId, itemId, comment);
         return itemClient.createComment(userId, itemId, comment);
     }
 
@@ -62,13 +64,14 @@ public class ItemController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @PathVariable("itemId") long itemId,
             @RequestBody ItemDto itemDto) {
-        log.info("Пришел Patch запрос на метод update");
+        log.info("Patch userId = {}, itemId = {}, item = {}", userId, itemId, itemDto);
         return itemClient.update(userId, itemId, itemDto);
     }
 
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<Object> delete(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") long itemId) {
-        log.info("Пришел Delete запрос на метод delete");
+    public ResponseEntity<Object> delete(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @PathVariable("itemId") long itemId) {
+        log.info("Delete userId = {}, itemId = {}", userId, itemId);
         return itemClient.deleteItem(userId, itemId);
     }
 

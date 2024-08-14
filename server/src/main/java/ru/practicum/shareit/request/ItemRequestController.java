@@ -23,7 +23,7 @@ public class ItemRequestController {
     @ResponseStatus(HttpStatus.OK)
     public List<ItemRequestDtoLite> getItemRequestForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                     @PathVariable(value = "requestId", required = false) Long requestId) {
-
+        log.info("Get userId = {}, requestId = {}", userId, requestId);
         return itemRequestService.findByUserId(userId);
     }
 
@@ -31,6 +31,7 @@ public class ItemRequestController {
     @ResponseStatus(HttpStatus.OK)
     public ItemRequestDtoLite getItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                           @PathVariable(value = "requestId") Long requestId) {
+        log.info("Get userId = {}, requestId = {}", userId, requestId);
         return itemRequestService.getItemRequest(userId, requestId);
     }
 
@@ -39,7 +40,7 @@ public class ItemRequestController {
     public List<ItemRequestDto> getItemRequestOwnerUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                   @RequestParam(name = "from") int from,
                                                   @RequestParam(name = "size") int size) {
-
+        log.info("Get userId = {}, from = {}, size = {}", userId, from, size);
         return itemRequestService.findItemRequestOwnerUser(userId, from, size);
 
     }
@@ -48,7 +49,7 @@ public class ItemRequestController {
     @ResponseStatus(HttpStatus.CREATED)
     public ItemRequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
                                             @RequestBody ItemRequestDto itemRequestDto) {
-        log.info("Пришел Post запрос на метод createItemRequest");
+        log.info("Post userId = {}, itemRequest = {}", userId, itemRequestDto);
         return itemRequestService.create(userId, itemRequestDto);
     }
 }
