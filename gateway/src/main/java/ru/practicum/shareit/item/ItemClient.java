@@ -16,10 +16,10 @@ import java.util.Map;
 
 @Service
 public class ItemClient extends BaseClient {
-    private static final String API_PREFIX = "/item";
+    private static final String API_PREFIX = "/items";
 
     @Autowired
-    public ItemClient(@Value("$shareit-server.url") String serverUrl, RestTemplateBuilder builder) {
+    public ItemClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
@@ -40,7 +40,7 @@ public class ItemClient extends BaseClient {
         if (text.isBlank()) {
             return ResponseEntity.ok(Collections.emptyList());
         }
-        return get("/search?text{text}", userId, Map.of("text", text));
+        return get("/search?text={text}", userId, Map.of("text", text));
     }
 
     public ResponseEntity<Object> create(Long userId, ItemDto itemDto) {
@@ -49,7 +49,7 @@ public class ItemClient extends BaseClient {
 
     public ResponseEntity<Object> createComment(Long userId, Long itemId, CommentDto comment) {
 
-        return post("/{itemId}/comment", userId, Map.of("itemId", itemId));
+        return post("/" + itemId + "/comment", userId, comment);
     }
 
     public ResponseEntity<Object> update(Long userId, long itemId, ItemDto itemDto) {
