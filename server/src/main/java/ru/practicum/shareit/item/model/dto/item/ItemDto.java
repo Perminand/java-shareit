@@ -15,10 +15,10 @@ public class ItemDto {
     private String name;
     private String description;
     private Boolean available;
-    private List<ItemRequest> requests;
     private BookingLiteDto nextBooking;
     private List<CommentDto> comments;
     private BookingLiteDto lastBooking;
     private Long ownerId;
+    private ItemRequest requests;
 }
 

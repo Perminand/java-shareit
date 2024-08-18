@@ -23,6 +23,7 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .comments(new ArrayList<>())
+                .requests(item.getRequest())
                 .build();
     }
 

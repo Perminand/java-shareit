@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.mappers;
 
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
+import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.model.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.dto.ItemRequestDtoLite;
@@ -35,11 +36,13 @@ public class ItemRequestMapper {
                     .map(ItemMapper::toItemDtoLite)
                     .collect(Collectors.toList());
         }
-        return ItemRequestDtoOut.builder()
+        ItemRequestDtoOut itemRequestDtoOut = ItemRequestDtoOut.builder()
                 .id(request.getId())
                 .description(request.getDescription())
                 .created(request.getCreated())
+                .requester(request.getRequester())
                 .items(itemsDtoOut)
                 .build();
+        return itemRequestDtoOut;
     }
 }

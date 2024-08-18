@@ -20,16 +20,15 @@ public class ItemRequestController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getItemRequestForUser(@RequestHeader(USER_HEADER) Long userId,
-                                                        @PathVariable(value = "requestId", required = false) Long requestId) {
-        log.info("Get userId = {}, requestId = {}", userId, requestId);
+    public ResponseEntity<Object> getItemRequestForUser(@RequestHeader(USER_HEADER) Long userId) {
+        log.info("Get userId = {}", userId);
         return requestClient.findByUserId(userId);
     }
 
     @GetMapping("/{requestId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> getItemRequest(@RequestHeader(USER_HEADER) Long userId,
-                                                 @PathVariable(value = "requestId") Long requestId) {
+                                                 @PathVariable Long requestId) {
         log.info("Get userId = {}, requestId = {}", userId, requestId);
         return requestClient.getItemRequest(userId, requestId);
     }
