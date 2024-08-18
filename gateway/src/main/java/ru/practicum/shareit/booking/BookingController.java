@@ -14,7 +14,6 @@ import ru.practicum.shareit.booking.dto.BookingState;
 @RequiredArgsConstructor
 public class BookingController {
 	private final BookingClient bookingClient;
-
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody BookingDtoIn bookingDto) {
