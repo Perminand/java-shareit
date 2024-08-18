@@ -18,6 +18,8 @@ import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.RequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -35,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final RequestRepository requestRepository;
 
     @Override
     public ItemDto getItemById(long itemId, long userId) {
@@ -94,15 +97,18 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ItemDtoLite create(Long userId, ItemDto item) {
-        validate(item);
+    public ItemDtoLite create(Long userId, ItemDto itemDto) {
+        validate(itemDto);
         User user = userGet(userId);
-        Item newItem = ItemMapper.toItem(item);
-        newItem.setOwner(user);
-        newItem.setAvailable(item.getAvailable());
-        itemRepository.save(newItem);
-        return ItemMapper.toItemDtoLite(newItem);
+        ItemRequest request = requestGet(itemDto.getRequestId());
+        Item item = ItemMapper.toItem(itemDto);
+        item.setOwner(user);
+        item.setAvailable(itemDto.getAvailable());
+        item.setRequest(request);
+        itemRepository.save(item);
+        return ItemMapper.toItemDtoLite(item);
     }
+
 
     @Override
     @Transactional
@@ -168,6 +174,12 @@ public class ItemServiceImpl implements ItemService {
     private User userGet(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
+
+    }
+
+    private ItemRequest requestGet(Long requestId) {
+        return requestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет request с заданным id: " + requestId));
 
     }
 

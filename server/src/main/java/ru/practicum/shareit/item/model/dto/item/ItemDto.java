@@ -19,6 +19,6 @@ public class ItemDto {
     private List<CommentDto> comments;
     private BookingLiteDto lastBooking;
     private Long ownerId;
-    private ItemRequest requests;
+    private Long requestId;
 }
 

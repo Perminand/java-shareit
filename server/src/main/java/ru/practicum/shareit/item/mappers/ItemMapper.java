@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .comments(new ArrayList<>())
-                .requests(item.getRequest())
+                .requestId(item.getId())
                 .build();
     }
 
@@ -33,13 +34,16 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(item.getRequest())
                 .build();
     }
 
     public static Item toItem(ItemDto itemDto) {
-        return new Item(
-                itemDto.getName(),
-                itemDto.getDescription());
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        return item;
 
     }
 
@@ -85,4 +89,5 @@ public class ItemMapper {
                 .comments(new ArrayList<>())
                 .build();
     }
-}
+
+    }

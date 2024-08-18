@@ -19,7 +19,6 @@ public class ItemRequestDtoOut {
     private Long id;
     private String description;
     private User requester;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime created;
     private List<ItemDtoLite> items;
 }
