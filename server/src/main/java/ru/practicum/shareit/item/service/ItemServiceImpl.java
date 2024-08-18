@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
+import ru.practicum.shareit.item.model.dto.comment.CommentDtoOut;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -22,12 +23,12 @@ import ru.practicum.shareit.request.RequestRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.item.mappers.CommentMapper.toCommentDto;
 import static ru.practicum.shareit.item.mappers.ItemMapper.*;
 
 @Service
@@ -38,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final RequestRepository requestRepository;
+    private final UserService userService;
 
     @Override
     public ItemDto getItemById(long itemId, long userId) {
@@ -146,9 +148,9 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    @Override
     @Transactional
-    public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
+    @Override
+    public CommentDtoOut createComment(Long userId, Long itemId, CommentDto commentDto) {
         if (commentDto.getText().isEmpty()) {
             throw new ValidationException("Comment text cant be empty!");
         }
@@ -164,8 +166,8 @@ public class ItemServiceImpl implements ItemService {
         commentDto.setCreated(LocalDateTime.now());
         Comment comment = CommentMapper.toCommentDb(commentDto, author, item);
         Comment commentDtoOut = commentRepository.save(comment);
-        commentDto = toCommentDto(commentDtoOut);
-        return commentDto;
+        CommentDtoOut commentDtoOut1 = CommentMapper.toCommentDtoOut(commentDtoOut);
+        return commentDtoOut1;
     }
 
     @Override

@@ -3,21 +3,18 @@ package ru.practicum.shareit.item.model.dto.comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.item.model.dto.item.ItemDto;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class CommentDto {
+@NoArgsConstructor
+public class CommentDtoOut {
     private Long id;
-    private String authorName;
-    private ItemDto item;
     private String text;
+    private String authorName;
     private LocalDateTime created;
-
-    public CommentDto(String text) {
-        this.text = text;
-    }
+    private Long itemId;
 }

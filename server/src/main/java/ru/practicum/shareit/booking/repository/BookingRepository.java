@@ -53,4 +53,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking b where b.booker.id = :bookerId AND b.end < :now")
     List<Booking> findAllByBookerIdAndPastStatus(Long bookerId, LocalDateTime now, Sort sort);
+
+    @Query(value = "SELECT b.* FROM bookings as b " +
+            "JOIN items as i ON i.id = b.item_id " +
+            "WHERE b.booker_id = ?1 " +
+            "AND i.id = ?2 " +
+            "AND b.status = 'APPROVED' " +
+            "AND b.end_date < ?3 ", nativeQuery = true)
+    List<Booking> findAllByUserBookings(Long userId, Long itemId, LocalDateTime now);
 }

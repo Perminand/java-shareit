@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
+import ru.practicum.shareit.item.model.dto.comment.CommentDtoOut;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
 import ru.practicum.shareit.item.service.ItemService;
@@ -52,9 +53,9 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto createComment(@RequestHeader(USER_HEADER) Long userId,
-                                    @PathVariable Long itemId,
-                                    @RequestBody CommentDto comment) {
+    public CommentDtoOut createComment(@RequestHeader(USER_HEADER) Long userId,
+                                       @PathVariable Long itemId,
+                                       @RequestBody CommentDto comment) {
         log.info("Post userId = {}, itemId = {}, comment = {}", userId, itemId, comment);
         return itemService.createComment(userId, itemId, comment);
     }

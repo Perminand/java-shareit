@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.mappers;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
+import ru.practicum.shareit.item.model.dto.comment.CommentDtoOut;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.dto.UserDto;
@@ -37,5 +38,14 @@ public class CommentMapper {
             commentDto.setAuthorName(userDto.getName());
         }
         return commentDto;
+    }
+
+    public static CommentDtoOut toCommentDtoOut(Comment comment) {
+        return new CommentDtoOut(
+                comment.getId(),
+                comment.getText(),
+                comment.getAuthor().getName(),
+                comment.getCreated(),
+                comment.getItem().getId());
     }
 }
