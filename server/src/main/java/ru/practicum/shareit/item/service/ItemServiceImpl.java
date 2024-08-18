@@ -100,13 +100,16 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoLite create(Long userId, ItemDto itemDto) {
         validate(itemDto);
         User user = userGet(userId);
-        ItemRequest request = requestGet(itemDto.getRequestId());
-        Item item = ItemMapper.toItem(itemDto);
+        Item item = toItem(itemDto);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != null) {
+            request = requestGet(itemDto.getRequestId());
+        }
         item.setOwner(user);
         item.setAvailable(itemDto.getAvailable());
         item.setRequest(request);
         itemRepository.save(item);
-        return ItemMapper.toItemDtoLite(item);
+        return toItemDtoLite(item);
     }
 
 
@@ -128,7 +131,7 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(itemDto.getAvailable());
         }
         itemRepository.save(item);
-        return ItemMapper.toItemDtoLite(item);
+        return toItemDtoLite(item);
     }
 
     @Override
