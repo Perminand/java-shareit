@@ -17,6 +17,6 @@ public enum BookingState {
                 return Optional.of(value);
             }
         }
-        return null;
+        return Optional.empty();
     }
 }
