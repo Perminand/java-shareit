@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Comment {
+    LocalDateTime created;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String text;
     @ManyToOne(fetch = FetchType.LAZY)
     private Item item;
-    LocalDateTime created;
     @ManyToOne(fetch = FetchType.LAZY)
     private User author;
 }

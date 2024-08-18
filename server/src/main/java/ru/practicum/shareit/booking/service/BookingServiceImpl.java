@@ -26,10 +26,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
+    private static final Sort SORT_DESC_START = Sort.by(Sort.Direction.DESC, "start");
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private static final Sort SORT_DESC_START = Sort.by(Sort.Direction.DESC, "start");
 
     @Override
     @Transactional

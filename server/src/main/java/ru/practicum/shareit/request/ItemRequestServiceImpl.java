@@ -38,7 +38,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDtoLite> findByUserId(Long userId) {
         userGet(userId);
         List<ItemRequestDtoLite> liteList = requestRepository.findByRequesterId(userId,
-                Sort.by(Sort.Direction.DESC, "created")).stream().map(ItemRequestMapper::toItemRequestDtoLite)
+                        Sort.by(Sort.Direction.DESC, "created")).stream().map(ItemRequestMapper::toItemRequestDtoLite)
                 .toList();
         return liteList;
     }
@@ -68,6 +68,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
 
     }
+
     private ItemRequest itemRequestGet(long itemRequest) {
         return requestRepository.findById(itemRequest)
                 .orElseThrow(() -> new EntityNotFoundException("Нет request с заданным id: " + itemRequest));
