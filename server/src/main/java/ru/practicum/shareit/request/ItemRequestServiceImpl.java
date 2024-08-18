@@ -30,7 +30,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
         itemRequest.setRequester(user);
         itemRequest.setCreated(LocalDateTime.now());
-        requestRepository.save(itemRequest);
+        itemRequest = requestRepository.save(itemRequest);
         return ItemRequestMapper.toRequestDtoOut(itemRequest);
     }
 

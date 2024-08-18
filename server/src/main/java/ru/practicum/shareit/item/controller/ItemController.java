@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
@@ -44,7 +45,7 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDtoLite create(@RequestHeader(USER_HEADER) Long userId, @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader(USER_HEADER) Long userId, @RequestBody @Validated ItemDto itemDto) {
         log.info("Post userId = {}, itemDto = {}", userId, itemDto);
         return itemService.create(userId, itemDto);
     }

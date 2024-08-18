@@ -97,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ItemDtoLite create(Long userId, ItemDto itemDto) {
+    public ItemDto create(Long userId, ItemDto itemDto) {
         validate(itemDto);
         User user = userGet(userId);
         Item item = toItem(itemDto);
@@ -108,8 +108,8 @@ public class ItemServiceImpl implements ItemService {
         item.setOwner(user);
         item.setAvailable(itemDto.getAvailable());
         item.setRequest(request);
-        itemRepository.save(item);
-        return toItemDtoLite(item);
+        item = itemRepository.save(item);
+        return ItemMapper.toItemDto(item);
     }
 
 

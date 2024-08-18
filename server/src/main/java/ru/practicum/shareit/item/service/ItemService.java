@@ -10,7 +10,7 @@ public interface ItemService {
 
     List<ItemDto> getItemsByUserId(long userId);
 
-    ItemDtoLite create(Long userId, ItemDto item);
+    ItemDto create(Long userId, ItemDto item);
 
     void deleteItem(long userId, long itemId);
 

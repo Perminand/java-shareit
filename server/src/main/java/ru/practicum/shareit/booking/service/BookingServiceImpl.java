@@ -48,12 +48,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto approveBooking(Long ownerId, long bookingId, String approved) {
-        userGet(ownerId);
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ValidationException("Нет booking с заданным id: " + bookingId));
 
         if (!Objects.equals(booking.getItem().getOwner().getId(), ownerId)) {
-            throw new EntityNotFoundException("User with id = " + ownerId + " is not an owner!");
+            throw new ValidationException("User with id = " + ownerId + " is not an owner!");
         }
 
         switch (approved) {
