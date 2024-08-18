@@ -6,7 +6,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
-import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.request.mappers.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.model.dto.ItemRequestDto;

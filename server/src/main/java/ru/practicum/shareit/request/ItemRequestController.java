@@ -18,8 +18,8 @@ import java.util.List;
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 public class ItemRequestController {
-    private final ItemRequestService itemRequestService;
     public static final String USER_HEADER = "X-Sharer-User-Id";
+    private final ItemRequestService itemRequestService;
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)

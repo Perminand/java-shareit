@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
-    private final ItemService itemService;
     public static final String USER_HEADER = "X-Sharer-User-Id";
+    private final ItemService itemService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
