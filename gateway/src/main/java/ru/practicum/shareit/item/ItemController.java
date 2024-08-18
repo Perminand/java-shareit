@@ -52,10 +52,9 @@ public class ItemController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> createComment(@RequestHeader(USER_HEADER) Long userId,
                                                 @PathVariable Long itemId,
-                                                @RequestBody String comment) {
+                                                @RequestBody CommentDto comment) {
         log.info("Post userId = {}, itemId = {}, comment = {}", userId, itemId, comment);
-        CommentDto commentDto = new CommentDto(comment);
-        return itemClient.createComment(userId, itemId, commentDto);
+        return itemClient.createComment(userId, itemId, comment);
     }
 
 

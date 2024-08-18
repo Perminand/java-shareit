@@ -16,8 +16,4 @@ public class CommentDto {
     private ItemDto item;
     private String text;
     private LocalDateTime created;
-
-    public CommentDto(String text) {
-        this.text = text;
-    }
 }
