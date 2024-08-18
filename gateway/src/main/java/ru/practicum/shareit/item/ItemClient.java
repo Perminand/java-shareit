@@ -8,8 +8,10 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.comment.CommentDto;
-import ru.practicum.shareit.item.dto.item.ItemDto;
+import ru.practicum.shareit.item.dto.item.ItemDtoFull;
+import ru.practicum.shareit.item.dto.item.ItemDtoLite;
 
 import java.util.Collections;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class ItemClient extends BaseClient {
         return get("/search?text={text}", userId, Map.of("text", text));
     }
 
-    public ResponseEntity<Object> create(Long userId, ItemDto itemDto) {
+    public ResponseEntity<Object> create(Long userId, ItemDtoFull itemDto) {
         return post("", userId, itemDto);
     }
 
@@ -52,8 +54,8 @@ public class ItemClient extends BaseClient {
         return post("/" + itemId + "/comment", userId, comment);
     }
 
-    public ResponseEntity<Object> update(Long userId, long itemId, ItemDto itemDto) {
-        return patch("/" + itemId, userId, itemDto);
+    public ResponseEntity<Object> update(Long userId, long itemId, ItemDtoFull itemDtoFull) {
+        return patch("/" + itemId, userId, itemDtoFull);
     }
 
     public ResponseEntity<Object> deleteItem(Long userId, long itemId) {

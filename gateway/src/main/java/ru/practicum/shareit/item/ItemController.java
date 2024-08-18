@@ -5,8 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.comment.CommentDto;
-import ru.practicum.shareit.item.dto.item.ItemDto;
+import ru.practicum.shareit.item.dto.item.ItemDtoFull;
+import ru.practicum.shareit.item.dto.item.ItemDtoLite;
+
+import javax.xml.stream.events.Comment;
 
 @Slf4j
 @RestController
@@ -42,7 +46,7 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @RequestBody ItemDto itemDto) {
+                                         @RequestBody ItemDtoFull itemDto) {
         log.info("Post userId = {}, item = {}", userId, itemDto);
         return itemClient.create(userId, itemDto);
     }
@@ -51,9 +55,10 @@ public class ItemController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                 @PathVariable Long itemId,
-                                                @RequestBody CommentDto comment) {
+                                                @RequestBody String comment) {
         log.info("Post userId = {}, itemId = {}, comment = {}", userId, itemId, comment);
-        return itemClient.createComment(userId, itemId, comment);
+        CommentDto commentDto = new CommentDto(comment);
+        return itemClient.createComment(userId, itemId, commentDto);
     }
 
 
@@ -62,9 +67,9 @@ public class ItemController {
     public ResponseEntity<Object> update(
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @PathVariable("itemId") long itemId,
-            @RequestBody ItemDto itemDto) {
-        log.info("Patch userId = {}, itemId = {}, item = {}", userId, itemId, itemDto);
-        return itemClient.update(userId, itemId, itemDto);
+            @RequestBody ItemDtoFull itemDtoFull) {
+        log.info("Patch userId = {}, itemId = {}, item = {}", userId, itemId, itemDtoFull);
+        return itemClient.update(userId, itemId, itemDtoFull);
     }
 
     @DeleteMapping("/{itemId}")

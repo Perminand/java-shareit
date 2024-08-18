@@ -10,9 +10,11 @@ import ru.practicum.shareit.request.mappers.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.model.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.dto.ItemRequestDtoLite;
+import ru.practicum.shareit.request.model.dto.ItemRequestDtoOut;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,12 +25,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     @Transactional
-    public ItemRequestDto create(Long userId, ItemRequestDto itemRequestDto) {
+    public ItemRequestDtoOut create(Long userId, ItemRequestDto itemRequestDto) {
         User user = userGet(userId);
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
         itemRequest.setRequester(user);
+        itemRequest.setCreated(LocalDateTime.now());
         requestRepository.save(itemRequest);
-        return ItemRequestMapper.toItemRequestDto(itemRequest);
+        return ItemRequestMapper.toRequestDtoOut(itemRequest);
     }
 
     @Override
@@ -53,10 +56,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public ItemRequestDtoLite getItemRequest(Long userId, Long requestId) {
+    public ItemRequestDtoOut getItemRequest(Long userId, Long requestId) {
         userGet(userId);
         ItemRequest itemRequest = itemRequestGet(requestId);
-        return ItemRequestMapper.toItemRequestDtoLite(itemRequest);
+        return ItemRequestMapper.toRequestDtoOut(itemRequest);
 
     }
 

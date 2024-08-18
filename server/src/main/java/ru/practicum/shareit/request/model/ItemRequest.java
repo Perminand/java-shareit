@@ -2,17 +2,19 @@ package ru.practicum.shareit.request.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString(of = {"id", "description", "created"})
-@EqualsAndHashCode(of = {"id", "description", "created"})
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Table(name = "request")
 public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +28,8 @@ public class ItemRequest {
 
     @Column(name = "created_date")
     private LocalDateTime created;
+
+    @OneToMany
+    @JoinColumn(name = "request_id")
+    private List<Item> items = new ArrayList<>();
 }

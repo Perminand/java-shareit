@@ -50,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto approveBooking(Long ownerId, long bookingId, String approved) {
         userGet(ownerId);
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет booking с заданным id: " + bookingId));
+                .orElseThrow(() -> new ValidationException("Нет booking с заданным id: " + bookingId));
 
         if (!Objects.equals(booking.getItem().getOwner().getId(), ownerId)) {
             throw new EntityNotFoundException("User with id = " + ownerId + " is not an owner!");
