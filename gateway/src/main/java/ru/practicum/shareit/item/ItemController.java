@@ -13,8 +13,8 @@ import ru.practicum.shareit.item.dto.item.ItemDtoFull;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
-    private final ItemClient itemClient;
     public static final String USER_HEADER = "X-Sharer-User-Id";
+    private final ItemClient itemClient;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

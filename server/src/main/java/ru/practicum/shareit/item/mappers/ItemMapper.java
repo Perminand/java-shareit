@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDto;
 import ru.practicum.shareit.item.model.dto.item.ItemDtoLite;
-import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -90,4 +89,4 @@ public class ItemMapper {
                 .build();
     }
 
-    }
+}

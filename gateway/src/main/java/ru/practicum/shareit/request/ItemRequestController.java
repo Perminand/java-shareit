@@ -15,8 +15,8 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 public class ItemRequestController {
-    private final RequestClient requestClient;
     public static final String USER_HEADER = "X-Sharer-User-Id";
+    private final RequestClient requestClient;
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -36,8 +36,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> getItemRequestOwnerUser(@RequestHeader(USER_HEADER) Long userId,
-                                                        @RequestParam(name = "from") int from,
-                                                        @RequestParam(name = "size") int size) {
+                                                          @RequestParam(name = "from") int from,
+                                                          @RequestParam(name = "size") int size) {
         log.info("Get userId = {}, from = {}, size = {}", userId, from, size);
         return requestClient.findItemRequestOwnerUser(userId, from, size);
 
@@ -46,7 +46,7 @@ public class ItemRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> createItemRequest(@RequestHeader(USER_HEADER) Long userId,
-                                            @RequestBody ItemRequestDto itemRequestDto) {
+                                                    @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Post userId = {}, itemRequest = {}", userId, itemRequestDto);
         return requestClient.create(userId, itemRequestDto);
     }

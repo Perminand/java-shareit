@@ -12,8 +12,8 @@ import ru.practicum.shareit.booking.dto.BookingDtoIn;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
-    private final BookingClient bookingClient;
     public static final String USER_HEADER = "X-Sharer-User-Id";
+    private final BookingClient bookingClient;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
