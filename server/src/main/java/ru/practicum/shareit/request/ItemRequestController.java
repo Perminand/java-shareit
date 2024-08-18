@@ -19,10 +19,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemRequestController {
     private final ItemRequestService itemRequestService;
+    public static final String USER_HEADER = "X-Sharer-User-Id";
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemRequestDtoLite> getItemRequestForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestDtoLite> getItemRequestForUser(@RequestHeader(USER_HEADER) Long userId,
                                                           @PathVariable(value = "requestId", required = false) Long requestId) {
         log.info("Get userId = {}, requestId = {}", userId, requestId);
         return itemRequestService.findByUserId(userId);
@@ -30,7 +31,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemRequestDtoOut getItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestDtoOut getItemRequest(@RequestHeader(USER_HEADER) Long userId,
                                             @PathVariable(value = "requestId") Long requestId) {
         log.info("Get userId = {}, requestId = {}", userId, requestId);
         return itemRequestService.getItemRequest(userId, requestId);
@@ -38,7 +39,7 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemRequestDto> getItemRequestOwnerUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestDto> getItemRequestOwnerUser(@RequestHeader(USER_HEADER) Long userId,
                                                         @RequestParam(name = "from") int from,
                                                         @RequestParam(name = "size") int size) {
         log.info("Get userId = {}, from = {}, size = {}", userId, from, size);
@@ -48,7 +49,7 @@ public class ItemRequestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemRequestDtoOut createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestDtoOut createItemRequest(@RequestHeader(USER_HEADER) Long userId,
                                                @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Post userId = {}, itemRequest = {}", userId, itemRequestDto);
         return itemRequestService.create(userId, itemRequestDto);

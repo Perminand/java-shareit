@@ -17,24 +17,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    public static final String USER_HEADER = "X-Sharer-User-Id";
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDto> getAll(@RequestHeader(USER_HEADER) Long userId) {
         log.info("Get userId = {}", userId);
         return itemService.getItemsByUserId(userId);
     }
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto getById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") long itemId) {
+    public ItemDto getById(@RequestHeader(USER_HEADER) Long userId, @PathVariable("itemId") long itemId) {
         log.info("Get userId = {}, itemId = {}", userId, itemId);
         return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemDto> search(@RequestHeader(USER_HEADER) Long userId,
                                 @RequestParam(name = "text") String text) {
         log.info("Get userId = {}, text = {}", userId, text);
         return itemService.search(userId, text);
@@ -43,14 +44,14 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDtoLite create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+    public ItemDtoLite create(@RequestHeader(USER_HEADER) Long userId, @RequestBody ItemDto itemDto) {
         log.info("Post userId = {}, itemDto = {}", userId, itemDto);
         return itemService.create(userId, itemDto);
     }
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public CommentDto createComment(@RequestHeader(USER_HEADER) Long userId,
                                     @PathVariable Long itemId,
                                     @RequestBody CommentDto comment) {
         log.info("Post userId = {}, itemId = {}, comment = {}", userId, itemId, comment);
@@ -61,7 +62,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public ItemDtoLite update(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(USER_HEADER) Long userId,
             @PathVariable("itemId") long itemId,
             @RequestBody ItemDto itemDto) {
         log.info("Patch userId = {}, itemId = {}, item = {}", userId, itemId, itemDto);
@@ -69,7 +70,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{itemId}")
-    public void delete(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") long itemId) {
+    public void delete(@RequestHeader(USER_HEADER) Long userId, @PathVariable("itemId") long itemId) {
         log.info("Delete userId = {}, itemId = {}", userId, itemId);
         itemService.deleteItem(userId, itemId);
     }

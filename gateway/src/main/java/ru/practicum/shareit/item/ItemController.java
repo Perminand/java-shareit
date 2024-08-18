@@ -14,17 +14,18 @@ import ru.practicum.shareit.item.dto.item.ItemDtoFull;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemClient itemClient;
+    public static final String USER_HEADER = "X-Sharer-User-Id";
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<Object> getAll(@RequestHeader(USER_HEADER) Long userId) {
         log.info("Get userId = {}", userId);
         return itemClient.getItemsByUserId(userId);
     }
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getById(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> getById(@RequestHeader(USER_HEADER) Long userId,
                                           @PathVariable("itemId") long itemId) {
         log.info("Get userId = {}, itemId = {}", userId, itemId);
         return itemClient.getItemById(itemId, userId);
@@ -32,7 +33,7 @@ public class ItemController {
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> search(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> search(@RequestHeader(USER_HEADER) Long userId,
                                          @RequestParam(name = "text") String text) {
         log.info("Get userId = {}, text = {}", userId, text);
         return itemClient.search(userId, text);
@@ -41,7 +42,7 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> create(@RequestHeader(USER_HEADER) Long userId,
                                          @RequestBody ItemDtoFull itemDto) {
         log.info("Post userId = {}, item = {}", userId, itemDto);
         return itemClient.create(userId, itemDto);
@@ -49,7 +50,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> createComment(@RequestHeader(USER_HEADER) Long userId,
                                                 @PathVariable Long itemId,
                                                 @RequestBody String comment) {
         log.info("Post userId = {}, itemId = {}, comment = {}", userId, itemId, comment);
@@ -61,7 +62,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> update(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(USER_HEADER) Long userId,
             @PathVariable("itemId") long itemId,
             @RequestBody ItemDtoFull itemDtoFull) {
         log.info("Patch userId = {}, itemId = {}, item = {}", userId, itemId, itemDtoFull);
@@ -69,7 +70,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<Object> delete(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> delete(@RequestHeader(USER_HEADER) Long userId,
                                          @PathVariable("itemId") long itemId) {
         log.info("Delete userId = {}, itemId = {}", userId, itemId);
         return itemClient.deleteItem(userId, itemId);

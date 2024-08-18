@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.model.User;
 @Setter
 @ToString(of = {"id", "name", "description", "available"})
 @Table(name = "items")
+@Builder
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

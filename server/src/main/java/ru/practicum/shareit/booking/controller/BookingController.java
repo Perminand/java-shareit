@@ -17,17 +17,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
+    public static final String USER_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookingDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody BookingDtoIn bookingDto) {
+    public BookingDto create(@RequestHeader(USER_HEADER) Long userId, @RequestBody BookingDtoIn bookingDto) {
         log.info("Creating booking {}, userId={}", bookingDto, userId);
         return bookingService.create(userId, bookingDto);
     }
 
     @PatchMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDto approveBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingDto approveBooking(@RequestHeader(USER_HEADER) Long userId,
                                      @PathVariable("bookingId") long bookingId,
                                      @RequestParam(name = "approved") String approved) {
         log.info("Approve userId = {}, bookingId = {}, approved = {}", userId, bookingId, approved);
@@ -36,7 +37,7 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDto getById(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingDto getById(@RequestHeader(USER_HEADER) Long userId,
                               @PathVariable(name = "bookingId") long bookingId) {
         log.info("Get booking {}, userId={}", bookingId, userId);
         return bookingService.getById(userId, bookingId);
@@ -44,7 +45,7 @@ public class BookingController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingDto> getAllForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<BookingDto> getAllForUser(@RequestHeader(USER_HEADER) Long userId,
                                           @RequestParam(name = "state", required = false, defaultValue = "ALL")
                                           String stateParam) {
         log.info("Get userId = {},  state = {}", userId, stateParam);
@@ -55,7 +56,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingDto> getAllItemForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<BookingDto> getAllItemForUser(@RequestHeader(USER_HEADER) Long userId,
                                               @RequestParam(name = "state", required = false, defaultValue = "ALL")
                                               String state) {
         log.info("Get userId = {}, state = {}", userId, state);
