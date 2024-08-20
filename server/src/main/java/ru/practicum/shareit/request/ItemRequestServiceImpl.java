@@ -26,7 +26,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional
     public ItemRequestDtoOut create(Long userId, ItemRequestDto itemRequestDto) {
-        User user = userGet(userId);
+        User user = getUser(userId);
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
         itemRequest.setRequester(user);
         itemRequest.setCreated(LocalDateTime.now());
@@ -36,7 +36,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoLite> findByUserId(Long userId) {
-        userGet(userId);
+        getUser(userId);
         List<ItemRequestDtoLite> liteList = requestRepository.findByRequesterId(userId,
                         Sort.by(Sort.Direction.DESC, "created")).stream().map(ItemRequestMapper::toItemRequestDtoLite)
                 .toList();
@@ -45,7 +45,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> findItemRequestOwnerUser(Long userId, int from, int size) {
-        userGet(userId);
+        getUser(userId);
         List<ItemRequestDto> itemRequests = requestRepository
                 .findByRequester_IdNot(userId, PageRequest.of(from, size, Sort.by("created").descending()))
                 .stream()
@@ -57,23 +57,18 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDtoOut getItemRequest(Long userId, Long requestId) {
-        userGet(userId);
-        ItemRequest itemRequest = itemRequestGet(requestId);
+        getUser(userId);
+        ItemRequest itemRequest = requestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Нет request с заданным id: " + requestId));
         ItemRequestDtoOut itemRequestDtoOut = ItemRequestMapper.toRequestDtoOut(itemRequest);
         return itemRequestDtoOut;
 
     }
 
-    private User userGet(long userId) {
+
+    private User getUser(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
 
     }
-
-    private ItemRequest itemRequestGet(long itemRequest) {
-        return requestRepository.findById(itemRequest)
-                .orElseThrow(() -> new EntityNotFoundException("Нет request с заданным id: " + itemRequest));
-
-    }
-
 }

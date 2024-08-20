@@ -34,8 +34,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto create(Long userId, BookingDtoIn bookingDto) {
-        User user = userGet(userId);
-        Item item = itemGet(bookingDto.getItemId());
+        User user = getUser(userId);
+        Item item = getItem(bookingDto.getItemId());
         validate(userId, item, bookingDto);
         Booking booking = BookingMapper.toBooking(bookingDto);
         booking.setBooker(user);
@@ -53,6 +53,9 @@ public class BookingServiceImpl implements BookingService {
 
         if (!Objects.equals(booking.getItem().getOwner().getId(), ownerId)) {
             throw new ValidationException("User with id = " + ownerId + " is not an owner!");
+        }
+        if (!booking.getStatus().equals(BookingStatus.WAITING)) {
+            throw new ValidationException("Бронь не cо статусом WAITING");
         }
 
         switch (approved) {
@@ -76,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getById(Long userId, long bookingId) {
-        userGet(userId);
+        getUser(userId);
         Booking booking = bookingGet(bookingId);
         if (!Objects.equals(booking.getItem().getOwner().getId(), userId) && !Objects.equals(booking.getBooker().getId(), userId)) {
             throw new EntityNotFoundException("User with id = " + userId + " is not an owner!");
@@ -86,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllForUser(Long userId, BookingState state) {
-        userGet(userId);
+        getUser(userId);
         List<Booking> bookingList = switch (state) {
             case WAITING ->
                     bookingRepository.findAllByBookerIdAndWaitingStatus(userId, BookingStatus.WAITING, SORT_DESC_START);
@@ -98,6 +101,7 @@ public class BookingServiceImpl implements BookingService {
                     bookingRepository.findAllByBookerIdAndFutureStatus(userId, LocalDateTime.now(), SORT_DESC_START);
             case PAST -> bookingRepository.findAllByBookerIdAndPastStatus(userId, LocalDateTime.now(), SORT_DESC_START);
             case ALL -> bookingRepository.findAllByBookerId(userId, SORT_DESC_START);
+            default -> throw new IllegalStateException("Unexpected value: " + state);
         };
         return bookingList
                 .stream()
@@ -108,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllBookingsByOwnerId(Long ownerId, String state) {
         BookingState from = BookingState.from(state).get();
-        userGet(ownerId);
+        getUser(ownerId);
         List<Long> userItemsIds = itemRepository.findByOwnerId(ownerId).stream()
                 .map(Item::getId)
                 .toList();
@@ -127,17 +131,18 @@ public class BookingServiceImpl implements BookingService {
             case PAST ->
                     bookingRepository.findAllByOwnerItemsAndPastStatus(userItemsIds, LocalDateTime.now(), SORT_DESC_START);
             case ALL -> bookingRepository.findAllByOwnerItems(userItemsIds, SORT_DESC_START);
+            default -> throw new IllegalStateException("Unexpected value: " + from);
         };
         return bookingList.stream().map(BookingMapper::toBookingDto).toList();
     }
 
-    private User userGet(long userId) {
+    private User getUser(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking: There is no Users with Id: " + userId));
 
     }
 
-    private Item itemGet(long itemId) {
+    private Item getItem(long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking: There is no Items with Id: " + itemId));
 
@@ -155,10 +160,6 @@ public class BookingServiceImpl implements BookingService {
         }
         if (bookingDto.getStart() == null || bookingDto.getEnd() == null) {
             throw new ValidationException("Booking: Dates are null!");
-        }
-        if (bookingDto.getEnd().isBefore(bookingDto.getStart()) || bookingDto.getStart().isEqual(bookingDto.getEnd())
-                || bookingDto.getEnd().isBefore(LocalDateTime.now()) || bookingDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Booking: Problem in dates");
         }
         if (item.getOwner().getId().equals(userId)) {
             throw new ValidationException("Booking: Owner can't book his item");

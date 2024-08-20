@@ -120,7 +120,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDtoLite update(Long userId, long itemId, ItemDto itemDto) {
         User user = getUser(userId);
-        Item item = itemGet(itemId);
+        Item item = getItem(itemId);
         if (!Objects.equals(item.getOwner().getId(), user.getId())) {
             throw new EntityNotFoundException("Попытка изменения item не владельцем");
         }
@@ -163,7 +163,7 @@ public class ItemServiceImpl implements ItemService {
         if (bookings.isEmpty()) {
             throw new ValidationException("This user has no booking");
         }
-        Item item = itemGet(itemId);
+        Item item = getItem(itemId);
         commentDto.setCreated(LocalDateTime.now());
         Comment comment = CommentMapper.toCommentDb(commentDto, author, item);
         Comment commentDtoOut = commentRepository.save(comment);
@@ -189,7 +189,7 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    private Item itemGet(long itemId) {
+    private Item getItem(long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + itemId));
 
