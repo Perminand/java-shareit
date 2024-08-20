@@ -43,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItemById(long itemId, long userId) {
-        userGet(userId);
+        getUser(userId);
         List<CommentDto> commentsForItem = commentRepository.findAllByItem_Id(itemId)
                 .stream()
                 .map(CommentMapper::toCommentDto)
@@ -70,9 +70,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
-        User userFromDb = userGet(userId);
+        User userFromDb = getUser(userId);
 
-        List<Item> userItems = itemRepository.findByOwnerId(userFromDb.getId(), Sort.by(Sort.Direction.ASC, "id"));
+        List<Item> userItems = itemRepository.findByOwnerId(userFromDb.getId(),
+                Sort.by(Sort.Direction.ASC,
+                        "id"));
         List<CommentDto> commentsToUserItems = commentRepository.findAllByItemsUserId(userId, Sort.by(Sort.Direction.DESC, "created"))
                 .stream().map(CommentMapper::toCommentDto).toList();
         List<BookingDto> bookingsToUserItems = getOwnerBooking(userId);
@@ -100,8 +102,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDto create(Long userId, ItemDto itemDto) {
-        validate(itemDto);
-        User user = userGet(userId);
+        User user = getUser(userId);
         Item item = toItem(itemDto);
         ItemRequest request = null;
         if (itemDto.getRequestId() != null) {
@@ -118,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDtoLite update(Long userId, long itemId, ItemDto itemDto) {
-        User user = userGet(userId);
+        User user = getUser(userId);
         Item item = itemGet(itemId);
         if (!Objects.equals(item.getOwner().getId(), user.getId())) {
             throw new EntityNotFoundException("Попытка изменения item не владельцем");
@@ -154,7 +155,7 @@ public class ItemServiceImpl implements ItemService {
         if (commentDto.getText().isEmpty()) {
             throw new ValidationException("Comment text cant be empty!");
         }
-        User author = userGet(userId);
+        User author = getUser(userId);
         List<BookingDto> bookings = bookingRepository.findAllByUserIdAndItemIdAndEndDateIsPassed(userId, itemId, LocalDateTime.now())
                 .stream()
                 .map(BookingMapper::toBookingDto)
@@ -176,7 +177,7 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.deleteByOwnerAndId(userId, itemId);
     }
 
-    private User userGet(long userId) {
+    private User getUser(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет user с заданным id: " + userId));
 
@@ -192,18 +193,6 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Нет item с заданным id: " + itemId));
 
-    }
-
-    private void validate(ItemDto item) {
-        if (item.getName() == null || item.getName().isEmpty()) {
-            throw new ValidationException("name не может быть null");
-        }
-        if (item.getDescription() == null || item.getDescription().isEmpty()) {
-            throw new ValidationException("description не может быть null");
-        }
-        if (item.getAvailable() == null) {
-            throw new ValidationException("available не может быть null");
-        }
     }
 
     private List<BookingDto> getOwnerBooking(Long ownerId) {

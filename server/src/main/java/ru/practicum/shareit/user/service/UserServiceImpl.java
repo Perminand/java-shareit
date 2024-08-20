@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     private void validate(UserDto user) {
         if (!Pattern.matches("^(.+)@(\\S+)$", user.getEmail())) {
-            throw new ValidationException("Емайл не коррктен");
+            throw new ValidationException("Емайл не корректен");
         }
     }
 
