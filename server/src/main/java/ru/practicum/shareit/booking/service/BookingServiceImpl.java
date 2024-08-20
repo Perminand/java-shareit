@@ -156,6 +156,10 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDto.getStart() == null || bookingDto.getEnd() == null) {
             throw new ValidationException("Booking: Dates are null!");
         }
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart()) || bookingDto.getStart().isEqual(bookingDto.getEnd())
+                || bookingDto.getEnd().isBefore(LocalDateTime.now()) || bookingDto.getStart().isBefore(LocalDateTime.now())) {
+            throw new ValidationException("Booking: Problem in dates");
+        }
         if (item.getOwner().getId().equals(userId)) {
             throw new ValidationException("Booking: Owner can't book his item");
         }

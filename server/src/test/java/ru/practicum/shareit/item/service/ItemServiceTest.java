@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,13 +25,11 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -77,7 +74,7 @@ class ItemServiceTest {
         when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
         when(requestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(request));
         when(itemRepository.save(Mockito.any(Item.class))).thenReturn(item);
-        Assertions.assertEquals(ItemMapper.toItemDto(item), itemService.create(user.getId(), ItemMapper.toItemDto(item)));
+        assertEquals(ItemMapper.toItemDto(item), itemService.create(user.getId(), ItemMapper.toItemDto(item)));
     }
 
 
@@ -89,7 +86,7 @@ class ItemServiceTest {
                 .thenReturn(bookingList);
         when(commentRepository.save(Mockito.any(Comment.class))).thenReturn(comment);
         CommentDtoOut commentDtoOut = itemService.createComment(user.getId(), item.getId(), CommentMapper.toCommentDto(comment));
-        Assertions.assertEquals(comment.getId(), commentDtoOut.getId());
+        assertEquals(comment.getId(), commentDtoOut.getId());
     }
 
     @Test
@@ -104,23 +101,18 @@ class ItemServiceTest {
 
     @Test
     void createCommentWhenUserHaveNotAnyBookingsShouldThrowValidationException() {
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
-        when(bookingRepository.findAllByUserBookings(anyLong(), anyLong(), any(LocalDateTime.class)))
-                .thenReturn(Collections.emptyList());
+        EntityNotFoundException entityNotFoundException = assertThrows(EntityNotFoundException.class,
+                () -> itemService.createComment(user.getId(), item.getId(), CommentMapper.toCommentDto(comment)));
 
-        ValidationException userBookingsNotFoundException = assertThrows(ValidationException.class,
-                () -> itemService.createComment(user.getId(), CommentMapper.toCommentDto(comment)item.getId(), ));
-
-        assertEquals(userBookingsNotFoundException.getMessage(), "У пользователя с id   " + user.getId() + " должно быть хотя бы одно бронирование предмета с id " + item.getId());
+        assertEquals(entityNotFoundException.getMessage(), "Нет user с заданным id: 1");
     }
-}
+
 
 @Test
 void update() {
     when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
     when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
-    Assertions.assertEquals(itemDtoLite, itemService.update(1L, 1L, ItemMapper.toItemDto(item)));
+    assertEquals(itemDtoLite, itemService.update(1L, 1L, ItemMapper.toItemDto(item)));
 }
 
 @Test
@@ -151,9 +143,16 @@ void updateItemWhenItemIdIsNotValid() {
 
 @Test
 void search() {
+    when(itemRepository
+            .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(Mockito.anyString(), Mockito.anyString())
+    ).thenReturn(List.of(item));
+    assertEquals("name", itemService.search(1L, "name").getFirst().getName());
 }
 
 @Test
 void getItemById() {
+    when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
+    when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
+    assertEquals("name", itemService.getItemById(1L, 1L).getName());
 }
 }
