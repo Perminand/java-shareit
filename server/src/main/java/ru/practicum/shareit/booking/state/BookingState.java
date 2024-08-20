@@ -9,7 +9,7 @@ public enum BookingState {
     CURRENT,
     FUTURE,
     PAST,
-    ALL;
+    ALL, ERROR;
 
     public static Optional<BookingState> from(String state) {
         for (BookingState value : BookingState.values()) {
