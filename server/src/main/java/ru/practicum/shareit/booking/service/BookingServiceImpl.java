@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.dto.BookingDto;
 import ru.practicum.shareit.booking.model.dto.BookingDtoIn;
+import ru.practicum.shareit.booking.model.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.state.BookingState;
 import ru.practicum.shareit.booking.state.BookingStatus;
@@ -33,7 +33,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto create(Long userId, BookingDtoIn bookingDto) {
+    public BookingDtoOut create(Long userId, BookingDtoIn bookingDto) {
         User user = getUser(userId);
         Item item = getItem(bookingDto.getItemId());
         validate(userId, item, bookingDto);
@@ -47,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto approveBooking(Long ownerId, long bookingId, String approved) {
+    public BookingDtoOut approveBooking(Long ownerId, long bookingId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ValidationException("Нет booking с заданным id: " + bookingId));
 
@@ -58,27 +58,21 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Бронь не cо статусом WAITING");
         }
 
-        switch (approved) {
-            case "true": {
-                if (booking.getStatus().equals(BookingStatus.APPROVED)) {
-                    throw new ValidationException("Status is Approved");
-                }
+        if (approved) {
+            if (booking.getStatus().equals(BookingStatus.APPROVED)) {
+                throw new ValidationException("Status is Approved");
+            } else {
                 booking.setStatus(BookingStatus.APPROVED);
-                break;
             }
-            case "false": {
-                booking.setStatus(BookingStatus.REJECTED);
-                break;
-            }
-            default:
-                throw new ValidationException("Incorrect data in approve method");
+        } else {
+            booking.setStatus(BookingStatus.REJECTED);
         }
         bookingRepository.save(booking);
         return BookingMapper.toBookingDto(booking);
     }
 
     @Override
-    public BookingDto getById(Long userId, long bookingId) {
+    public BookingDtoOut getById(Long userId, long bookingId) {
         getUser(userId);
         Booking booking = bookingGet(bookingId);
         if (!Objects.equals(booking.getItem().getOwner().getId(), userId) && !Objects.equals(booking.getBooker().getId(), userId)) {
@@ -88,7 +82,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllForUser(Long userId, BookingState state) {
+    public List<BookingDtoOut> getAllForUser(Long userId, BookingState state) {
         getUser(userId);
         List<Booking> bookingList = switch (state) {
             case WAITING ->
@@ -110,7 +104,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByOwnerId(Long ownerId, String state) {
+    public List<BookingDtoOut> getAllBookingsByOwnerId(Long ownerId, String state) {
         BookingState from = BookingState.from(state).get();
         getUser(ownerId);
         List<Long> userItemsIds = itemRepository.findByOwnerId(ownerId).stream()

@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.mappers;
 
 
-import ru.practicum.shareit.booking.model.dto.BookingDto;
+import ru.practicum.shareit.booking.model.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.state.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.comment.CommentDto;
@@ -46,7 +46,7 @@ public class ItemMapper {
 
     }
 
-    public static ItemDto toItemDtoWithBookingsAndComments(Item item, List<BookingDto> bookings, List<CommentDto> comments) {
+    public static ItemDto toItemDtoWithBookingsAndComments(Item item, List<BookingDtoOut> bookings, List<CommentDto> comments) {
         ItemDto itemDto = null;
         if (bookings == null) {
             itemDto = toItemDto(item);
@@ -63,20 +63,20 @@ public class ItemMapper {
         return itemDto;
     }
 
-    public static ItemDto toItemDtoWithBookings(Item item, List<BookingDto> bookings) {
-        BookingDto lastBooking = null;
-        BookingDto nextBooking = null;
+    public static ItemDto toItemDtoWithBookings(Item item, List<BookingDtoOut> bookings) {
+        BookingDtoOut lastBooking = null;
+        BookingDtoOut nextBooking = null;
         if (!bookings.isEmpty()) {
             lastBooking = bookings.stream()
                     .filter(x -> x.getStatus() != BookingStatus.REJECTED)
                     .filter(x -> x.getStatus() != BookingStatus.CANCELED)
                     .filter(x -> x.getStart().isBefore(LocalDateTime.now()))
-                    .max(Comparator.comparing(BookingDto::getStart)).orElse(null);
+                    .max(Comparator.comparing(BookingDtoOut::getStart)).orElse(null);
             nextBooking = bookings.stream()
                     .filter(x -> x.getStatus() != BookingStatus.REJECTED)
                     .filter(x -> x.getStatus() != BookingStatus.CANCELED)
                     .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
-                    .min(Comparator.comparing(BookingDto::getStart)).orElse(null);
+                    .min(Comparator.comparing(BookingDtoOut::getStart)).orElse(null);
         }
         return ItemDto.builder()
                 .id(item.getId())

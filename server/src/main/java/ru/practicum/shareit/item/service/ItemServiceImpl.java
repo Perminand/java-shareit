@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
-import ru.practicum.shareit.booking.model.dto.BookingDto;
+import ru.practicum.shareit.booking.model.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.error.EntityNotFoundException;
 import ru.practicum.shareit.exception.error.ValidationException;
@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
-        List<BookingDto> bookingsForItem = getOwnerBooking(userId)
+        List<BookingDtoOut> bookingsForItem = getOwnerBooking(userId)
                 .stream()
                 .filter(x -> x.getItem().getId().equals(itemId))
                 .collect(Collectors.toList());
@@ -77,9 +77,9 @@ public class ItemServiceImpl implements ItemService {
                         "id"));
         List<CommentDto> commentsToUserItems = commentRepository.findAllByItemsUserId(userId, Sort.by(Sort.Direction.DESC, "created"))
                 .stream().map(CommentMapper::toCommentDto).toList();
-        List<BookingDto> bookingsToUserItems = getOwnerBooking(userId);
+        List<BookingDtoOut> bookingsToUserItems = getOwnerBooking(userId);
 
-        Map<Item, List<BookingDto>> itemsWithBookingsMap = new HashMap<>();
+        Map<Item, List<BookingDtoOut>> itemsWithBookingsMap = new HashMap<>();
         Map<Item, List<CommentDto>> itemsWithCommentsMap = new HashMap<>();
 
         for (Item i : userItems) {
@@ -156,7 +156,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Comment text cant be empty!");
         }
         User author = getUser(userId);
-        List<BookingDto> bookings = bookingRepository.findAllByUserIdAndItemIdAndEndDateIsPassed(userId, itemId, LocalDateTime.now())
+        List<BookingDtoOut> bookings = bookingRepository.findAllByUserIdAndItemIdAndEndDateIsPassed(userId, itemId, LocalDateTime.now())
                 .stream()
                 .map(BookingMapper::toBookingDto)
                 .toList();
@@ -174,7 +174,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public void deleteItem(long userId, long itemId) {
-        itemRepository.deleteByOwnerAndId(userId, itemId);
+        itemRepository.deleteByOwnerIdAndId(userId, itemId);
     }
 
     private User getUser(long userId) {
@@ -195,7 +195,7 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    private List<BookingDto> getOwnerBooking(Long ownerId) {
+    private List<BookingDtoOut> getOwnerBooking(Long ownerId) {
         return bookingRepository.findAllByItemOwnerId(ownerId)
                 .stream()
                 .map(BookingMapper::toBookingDto)
