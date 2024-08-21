@@ -36,7 +36,7 @@ class BookingRepositoryTest {
     private final Booking bookingWaiting3 = new Booking(null, LocalDateTime.now(), LocalDateTime.now().plusMinutes(5), item1, user2, BookingStatus.WAITING);
     private final Item item2 = new Item(null, "name2", "description2", true, user1, null);
     private final Item item3 = new Item(null, "name3", "description3", true, user2, null);
-    private final Sort SORT_DESC = Sort.by(Sort.Direction.DESC, "end");
+    private static final Sort SORT_DESC = Sort.by(Sort.Direction.DESC, "end");
 
     @AfterEach
     public void deleteAll() {

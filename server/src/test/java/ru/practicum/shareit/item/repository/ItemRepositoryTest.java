@@ -83,10 +83,14 @@ class ItemRepositoryTest {
         itemRepository.save(item1);
         itemRepository.save(item2);
         itemRepository.save(item3);
-        List<Item> itemListForName = itemRepository.
-                findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase("name2", "name2");
-        List<Item> itemListForDescription = itemRepository.
-                findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase("description2", "description2");
+        List<Item> itemListForName = itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                "name2",
+                "name2"
+        );
+        List<Item> itemListForDescription = itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                "description2",
+                "description2"
+        );
         assertEquals(1, itemListForName.size());
         assertEquals("name2", itemListForName.getFirst().getName());
         assertEquals(1, itemListForDescription.size());
