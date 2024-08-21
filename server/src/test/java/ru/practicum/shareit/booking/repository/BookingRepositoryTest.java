@@ -53,9 +53,9 @@ class BookingRepositoryTest {
         itemRepository.save(item1);
         itemRepository.save(item2);
         itemRepository.save(item3);
-        bookingWaiting1 = new Booking(null, LocalDateTime.now(), LocalDateTime.now().plusMinutes(5), item1, user1, BookingStatus.WAITING);
-        bookingWaiting2 = new Booking(null, LocalDateTime.now(), LocalDateTime.now().plusMinutes(5), item1, user1, BookingStatus.WAITING);
-        bookingWaiting3 = new Booking(null, LocalDateTime.now(), LocalDateTime.now().plusMinutes(5), item1, user2, BookingStatus.WAITING);
+        bookingWaiting1 = new Booking(null, LocalDateTime.now().minusMinutes(5), LocalDateTime.now().plusMinutes(5), item1, user1, BookingStatus.WAITING);
+        bookingWaiting2 = new Booking(null, LocalDateTime.now().minusMinutes(5), LocalDateTime.now().plusMinutes(5), item1, user1, BookingStatus.WAITING);
+        bookingWaiting3 = new Booking(null, LocalDateTime.now().minusMinutes(5), LocalDateTime.now().plusMinutes(5), item1, user2, BookingStatus.WAITING);
     }
 
     @Test
@@ -212,15 +212,15 @@ class BookingRepositoryTest {
     @Test
     void findAllByBookerIdAndRejectedStatus() {
         bookingWaiting1.setStatus(BookingStatus.REJECTED);
-        bookingWaiting1.setStatus(BookingStatus.REJECTED);
+        bookingWaiting2.setStatus(BookingStatus.REJECTED);
 
         bookingRepository.save(bookingWaiting1);
         bookingRepository.save(bookingWaiting2);
         bookingRepository.save(bookingWaiting3);
 
         List<Booking> bookingList = bookingRepository.findAllByBookerIdAndRejectedStatus(user1.getId(), List.of(BookingStatus.REJECTED), SORT_DESC);
-        assertEquals(2, bookingList.size());
-        assertEquals(user2.getId(), bookingList.getFirst().getId());
+        assertEquals(2, bookingList.size(), "check size");
+        assertEquals(bookingWaiting2.getId(), bookingList.getFirst().getId(), "check first");
     }
 
     @Test
@@ -241,7 +241,7 @@ class BookingRepositoryTest {
 
         List<Booking> bookingList = bookingRepository.findAllByBookerIdAndCurrentStatus(user1.getId(), LocalDateTime.now(), SORT_DESC);
         assertEquals(2, bookingList.size());
-        assertEquals(2L, bookingList.getFirst().getId());
+        assertEquals(bookingWaiting2.getId(), bookingList.getFirst().getId());
     }
 
     @Test
