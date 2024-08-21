@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.repository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Transactional
 class ItemRepositoryTest {
 
 
@@ -43,9 +45,9 @@ class ItemRepositoryTest {
         itemRepository.save(item1);
         itemRepository.save(item2);
 
-        List<Item> items = itemRepository.findByOwnerId(1L);
-        assertEquals(items.size(), 1);
-        assertEquals(items.get(0).getName(), "name1");
+        List<Item> items = itemRepository.findByOwnerId(user1.getId());
+        assertEquals(items.size(), 2);
+        assertEquals(items.getFirst().getName(), "name1");
     }
 
     @Test
@@ -57,9 +59,9 @@ class ItemRepositoryTest {
         itemRepository.save(item2);
         itemRepository.save(item3);
 
-        List<Item> items = itemRepository.findByOwnerId(1L);
+        List<Item> items = itemRepository.findByOwnerId(user1.getId());
         assertEquals(items.size(), 2);
-        assertEquals(items.get(0).getName(), "name1");
+        assertEquals(items.getFirst().getName(), "name1");
     }
 
     @Test
@@ -70,9 +72,9 @@ class ItemRepositoryTest {
         itemRepository.save(item1);
         itemRepository.save(item2);
         itemRepository.save(item3);
-        itemRepository.deleteByOwnerIdAndId(1L, 2L);
+        itemRepository.deleteByOwnerIdAndId(user1.getId(), item2.getId());
 
-        assertEquals(1, itemRepository.findByOwnerId(1L).size());
+        assertEquals(1, itemRepository.findByOwnerId(user1.getId()).size());
     }
 
     @Test

@@ -57,7 +57,7 @@ class RequestRepositoryTest {
         requestRepository.save(request1);
         requestRepository.save(request2);
         requestRepository.save(request3);
-        List<ItemRequest> requestList = requestRepository.findByRequesterId(1L, Sort.by(Sort.Direction.DESC, "created"));
+        List<ItemRequest> requestList = requestRepository.findByRequesterId(user1.getId(), Sort.by(Sort.Direction.DESC, "created"));
         assertEquals(2, requestList.size());
         assertEquals("description3", requestList.getFirst().getDescription());
 
@@ -77,7 +77,7 @@ class RequestRepositoryTest {
         requestRepository.save(request2);
         requestRepository.save(request3);
 
-        assertEquals(1, requestRepository.findByRequester_IdNot(1L, Pageable.ofSize(10)).size());
+        assertEquals(1, requestRepository.findByRequester_IdNot(user1.getId(), Pageable.ofSize(10)).size());
 
 
     }

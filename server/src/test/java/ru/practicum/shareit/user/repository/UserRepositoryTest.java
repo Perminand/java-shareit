@@ -24,6 +24,6 @@ class UserRepositoryTest {
     @Test
     void create() {
         userRepository.save(user1);
-        assertEquals(user1, userRepository.findById(1L).get());
+        assertEquals(user1, userRepository.findById(user1.getId()).get());
     }
 }
