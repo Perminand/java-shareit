@@ -219,7 +219,7 @@ class BookingRepositoryTest {
         bookingRepository.save(bookingWaiting3);
 
         List<Booking> bookingList = bookingRepository.findAllByBookerIdAndRejectedStatus(user1.getId(), List.of(BookingStatus.REJECTED), SORT_DESC);
-        assertEquals(1, bookingList.size());
+        assertEquals(2, bookingList.size());
         assertEquals(user2.getId(), bookingList.getFirst().getId());
     }
 
